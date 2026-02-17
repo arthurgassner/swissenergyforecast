@@ -34,7 +34,7 @@ async def middleware(request: Request, call_next):
 
 @app.get("/")
 async def get_root():
-    return {"message": "Welcome to the swissenergy-backend!"}
+    return {"message": "Welcome to the swissenergyforecast-backend!"}
 
 
 app.include_router(entsoe_loads_router)

@@ -1,6 +1,6 @@
 async function fetchLastUpdated() {
     try {
-        const response = await fetch('https://swissenergy-backend.arthurgassner.ch/forecasts/fetch/latest/ts');
+        const response = await fetch('http://backend/forecasts/fetch/latest/ts');
         if (!response.ok) {
             throw new Error('Network response was not ok: ' + response.statusText);
         }
