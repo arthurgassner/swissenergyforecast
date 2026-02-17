@@ -16,10 +16,14 @@ COPY . .
 
 # Run stage
 FROM python:3.14-slim
+
+# Install the OpenMP shared library -- used by lightgbm
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /.venv /.venv
 COPY ./backend .
-
-
 
 # Put the .venv on the PATH
 ENV PATH="/.venv/bin:$PATH"
