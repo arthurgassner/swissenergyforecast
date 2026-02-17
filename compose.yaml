@@ -1,0 +1,34 @@
+name: swissenergyforecast
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file:
+      - ./backend/.env.override
+    container_name: swissenergyforecast-backend
+    ports:
+      - "8080:80"
+    volumes:
+      - swissenergyforecast-backend-data:/code/data
+    networks:
+      - swissenergyforecast-net
+
+  frontend:
+    build:
+      context: .  
+      dockerfile: frontend/Dockerfile
+    container_name: swissenergyforecast-frontend
+    ports:
+      - "3000:80"           
+    networks:
+      - swissenergyforecast-net
+
+volumes:
+  swissenergyforecast-backend-data:
+    name: swissenergyforecast-backend-data
+
+networks:
+  swissenergyforecast-net:
+    driver: bridge
