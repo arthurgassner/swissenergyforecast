@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv run --project frontend mkdocs build -f frontend/mkdocs.yml
 
 # Run stage
-FROM nginx:alpin
+FROM nginx:alpine
 # NOTE: mkdocs defaults to the site folder
 COPY --from=builder /app/frontend/site /usr/share/nginx/html
 
