@@ -13,6 +13,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 WORKDIR /app
 COPY . .
 
+# Rely on cache to build static site
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv run --project frontend mkdocs build -f frontend/mkdocs.yml
 
