@@ -1,4 +1,5 @@
-FROM ghcr.io/astral-sh/uv:python3.14-alpine AS builder
+# Build stage
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS builder
 
 # Install all dependencies
 ENV UV_COMPILE_BYTECODE=1
@@ -17,8 +18,8 @@ COPY . .
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv run --project frontend mkdocs build -f frontend/mkdocs.yml
 
-FROM nginx:alpine
-
+# Run stage
+FROM nginx:alpin
 # NOTE: mkdocs defaults to the site folder
 COPY --from=builder /app/frontend/site /usr/share/nginx/html
 

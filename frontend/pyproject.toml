@@ -1,6 +1,4 @@
 [project]
 name = "frontend"
 version = "0.0.1"
-dependencies = [
-    "mkdocs-material>=9.7.1",
-]
+dependencies = ["mkdocs-material>=9.7.1"]
