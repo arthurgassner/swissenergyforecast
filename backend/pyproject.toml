@@ -1,0 +1,18 @@
+[project]
+name = "backend"
+version = "0.0.1"
+dependencies = [
+    "entsoe-py>=0.7.8",
+    "fastapi[standard]>=0.120.4",
+    "human-readable>=2.0.0",
+    "joblib>=1.5.2",
+    "lightgbm>=4.6.0",
+    "loguru>=0.7.3",
+    "pandas>=2.3.3",
+    "pydantic-settings>=2.11.0",
+    "scikit-learn>=1.7.2",
+    "tqdm>=4.67.1",
+]
+
+[dependency-groups]
+dev = ["pre-commit>=4.3.0"]

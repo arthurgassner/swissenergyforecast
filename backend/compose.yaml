@@ -1,0 +1,19 @@
+name: swissenergy-backend
+services:
+  swissenergy-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+        - .env
+    container_name: swissenergy-backend
+    ports:
+        - 8080:80
+    volumes:
+        - swissenergy-backend-data:/code/data
+    image: swissenergy-backend-image
+    
+volumes:
+  swissenergy-backend-data:
+    external: false
+    name: swissenergy-backend-data

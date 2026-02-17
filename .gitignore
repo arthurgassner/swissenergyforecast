@@ -8,3 +8,13 @@ wheels/
 
 # Virtual environments
 .venv
+*.joblib
+data
+.ipynb_checkpoints
+.virtual_documents
+__pycache__
+model.joblib
+.env
+*.parquet
+iframe_figures
+*.log

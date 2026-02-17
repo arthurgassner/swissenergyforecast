@@ -1,0 +1,29 @@
+# Build stage
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS builder
+
+# Install all dependencies
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    --mount=type=bind,source=backend/pyproject.toml,target=backend/pyproject.toml \
+    uv sync --frozen --no-install-project --no-dev --project backend
+
+WORKDIR /app
+COPY . .
+
+# Run stage
+FROM python:3.14-slim
+COPY --from=builder /.venv /.venv
+COPY ./backend .
+
+
+
+# Put the .venv on the PATH
+ENV PATH="/.venv/bin:$PATH"
+
+EXPOSE 80
+
+CMD ["fastapi", "run", "app/main.py", "--port", "80"]
