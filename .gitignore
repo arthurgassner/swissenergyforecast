@@ -17,7 +17,7 @@ wheels/
 data
 
 # Env files
-.env.dev
+.env.override
 
 iframe_figures
 *.log
