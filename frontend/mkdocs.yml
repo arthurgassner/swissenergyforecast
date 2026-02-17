@@ -1,0 +1,80 @@
+site_name: Swiss Energy Forecast 
+site_url: https://swissenergy.arthurgassner.ch
+repo_name: swissenergy-backend
+repo_url: https://github.com/arthurgassner/swissenergy-backend/
+theme:
+  name: material
+  custom_dir: overrides # Needed for the google search metatag
+  icon:
+    logo: fontawesome/solid/plug-circle-bolt
+    repo: fontawesome/brands/github
+  favicon: assets/favicon.ico
+  features:
+    - content.footnote.tooltips
+    - content.code.copy
+    - navigation.footer
+  palette:
+    scheme: slate  # Options: default, slate, or custom
+    primary: plum  # Primary color
+    accent: pink     # Accent color
+plugins: [] # disable search
+nav:
+  - Dashboard: index.md    
+  - Motivation: motivation.md                
+  - Problem Understanding: problem_understanding.md                
+  - Data Ingestion: data_ingestion.md                
+  - EDA: eda.md
+  - Modelling: modelling.md
+  - Industrialization: industrialization.md
+  - Deployment: deployment.md
+  - Conclusion: conclusion.md
+  - About me: about_me.md
+extra:
+  analytics:
+    provider: google
+    property: G-JYGEF8CYXF
+  social:
+    - icon: fontawesome/brands/github 
+      link: https://github.com/arthurgassner
+    - icon: fontawesome/brands/linkedin 
+      link: https://www.linkedin.com/in/arthur-gassner/
+    - icon: fontawesome/solid/globe
+      link: https://arthurgassner.ch
+    - icon: material/email
+      link: mailto:arth.gassner@gmail.com
+
+extra_css:
+  - css/extra-styles.css
+  - https://unpkg.com/katex@0/dist/katex.min.css
+  
+extra_javascript:
+  - https://cdn.plot.ly/plotly-latest.min.js
+  - https://unpkg.com/katex@0/dist/katex.min.js
+  - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
+  - javascripts/katex.js
+  - javascripts/consumption_lineplot.js
+  - javascripts/last_updated.js
+  - javascripts/mape_barplot.js
+
+markdown_extensions:
+  - tables
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - footnotes
+  - smarty
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.arithmatex:
+      generic: true
+
+
+

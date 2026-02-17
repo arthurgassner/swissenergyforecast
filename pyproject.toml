@@ -1,0 +1,8 @@
+[project]
+name = "swissenergyforecast"
+version = "0.0.1"
+description = "Monorepo for swissenergyforecast's backend & frontend"
+requires-python = ">=3.14"
+
+[tool.uv.workspace]
+members = ["frontend"]
