@@ -8,8 +8,8 @@ services:
     env_file:
       - ./backend/.env.override
     container_name: swissenergyforecast-backend
-    ports:
-      - "8080:80"
+    expose:
+      - "8000"
     volumes:
       - swissenergyforecast-backend-data:/code/data
     networks:
@@ -21,7 +21,7 @@ services:
       dockerfile: frontend/Dockerfile
     container_name: swissenergyforecast-frontend
     ports:
-      - "3000:80"           
+      - "80:80"           
     networks:
       - swissenergyforecast-net
 

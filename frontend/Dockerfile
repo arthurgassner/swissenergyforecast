@@ -20,8 +20,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # Run stage
 FROM nginx:alpine
-# NOTE: mkdocs defaults to the site folder
+# NOTE: mkdocs defaults to the site/ folder
 COPY --from=builder /app/frontend/site /usr/share/nginx/html
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
