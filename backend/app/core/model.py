@@ -58,7 +58,6 @@ class Model:
         self,
         Xy: pd.DataFrame,
         query_timestamps: list[pd.Timestamp],
-        out_yhat_filepath: Path | None = None,
         already_computed_yhat_filepath: Path | None = None,
     ) -> pd.Series:
         """Train one model per query_ts in `query_timestamps` not already-present in `already_computed_yhat_filepath`.
@@ -68,7 +67,6 @@ class Model:
         Args:
             Xy (pd.DataFrame): Dataframe containing the (features, target), where the target is '24h_later_load'
             query_timestamps (list[pd.Timestamp]): Timestamps whose inference we are interested in
-            out_yhat_filepath (Path, optional): Where to save the predictions.
             already_computed_yhat_filepath (Path, optional): Filepath of already-computed yhats.
                                                             If given, the timestamps whose yhat exists will not be recomputed.
 
@@ -91,13 +89,4 @@ class Model:
             else:
                 predicted_values.append(self._train_predict(Xy, query_ts))
 
-        yhat = pd.DataFrame(
-            {"predicted_24h_later_load": predicted_values},
-            index=pd.DatetimeIndex(query_timestamps),
-        )
-
-        if out_yhat_filepath:
-            out_yhat_filepath.parent.mkdir(parents=True, exist_ok=True)
-            yhat.to_pickle(out_yhat_filepath)
-
-        return yhat
+        return pd.DataFrame({"predicted_24h_later_load": predicted_values}, index=pd.DatetimeIndex(query_timestamps))

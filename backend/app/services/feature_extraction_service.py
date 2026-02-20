@@ -48,13 +48,11 @@ def _rolling_window(df: pd.DataFrame, n_hours: int, stat: Callable) -> pd.Series
     last_hour_loads = _n_hours_ago_load(df, n_hours=1)
     return last_hour_loads.rolling(window=n_hours, min_periods=1).apply(stat)
 
-
-def extract_features(df: pd.DataFrame, out_df_filepath: Path) -> None:
-    """Extract the features.
+def enrich(df: pd.DataFrame) -> None:
+    """Enrich the df with the extracted features.
 
     Args:
-        df (pd.DataFrame): Dataframe whose features must be extracted (.pickle)
-        out_df_filepath (Path): Filepath where to dump the extracted features (.pickle)
+        df (pd.DataFrame): Dataframe whose features must be extracted
     """
 
     # Enrich the df with the datetime attributes
@@ -84,6 +82,4 @@ def extract_features(df: pd.DataFrame, out_df_filepath: Path) -> None:
     df["7d_max"] = _rolling_window(df, n_hours=7 * 24, stat=np.nanmax)
     df["7d_median"] = _rolling_window(df, n_hours=7 * 24, stat=np.nanmedian)
 
-    # Dump to output df
-    out_df_filepath.parent.mkdir(parents=True, exist_ok=True)  # Ensure the folderpath exists
-    df.to_pickle(out_df_filepath)
+    return df

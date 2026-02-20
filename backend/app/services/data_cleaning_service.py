@@ -50,7 +50,7 @@ def _enforce_data_quality(df: pd.DataFrame) -> None:
 
     Raises:
         ValueError: If not isinstance(df.index, pd.DatetimeIndex)
-        ValueError: If df.index.dtype != "datetime64[ns, Europe/Zurich]"
+        ValueError: If df.index.dtype != "datetime64[us, Europe/Zurich]"
         ValueError: If len(df.columns) != 2
         ValueError: If df.columns != ["Forecasted Load", "Actual Load"]
         ValueError: If df.dtypes.to_list() != ['float64', 'float64']
@@ -62,17 +62,18 @@ def _enforce_data_quality(df: pd.DataFrame) -> None:
     # Enforce the data quality of the index
     # errors
     if not isinstance(df.index, pd.DatetimeIndex):
-        logger.error(f"df.index should be an instance of pd.DatetimeIndex, but is: {type(df.index)}")
-        raise ValueError
-    if df.index.dtype != "datetime64[ns, Europe/Zurich]":
-        logger.error(f"df.index.dtype should be datetime64[ns, Europe/Zurich] but is: {df.index.dtype}")
-        raise ValueError
+        error_str = f"df.index should be an instance of pd.DatetimeIndex, but is: {type(df.index)}"
+        logger.error(error_str)
+        raise ValueError(error_str)
+    if df.index.dtype != "datetime64[us, Europe/Zurich]":
+        error_str = f"df.index.dtype should be datetime64[us, Europe/Zurich] but is: {df.index.dtype}"
+        logger.error(error_str)
+        raise ValueError(error_str)
 
     # warnings
     if not df.index.is_unique:
-        logger.warning(
-            f"df.index should be unique, but has {(df.index.value_counts() > 1).sum()} duplicated index. Forcing index's uniqueness by aggregating duplicated index with median..."
-        )
+        warning_str = f"df.index should be unique, but has {(df.index.value_counts() > 1).sum()} duplicated index. Forcing index's uniqueness by aggregating duplicated index with median..."
+        logger.warning(warning_str)
         df = df.groupby(df.index).median()
     if not df.index.is_monotonic_increasing:
         logger.warning(
@@ -120,7 +121,7 @@ def _force_1h_frequency(df: pd.DataFrame) -> pd.DataFrame:
     return df.resample(rule=pd.Timedelta(1, "h")).min()
 
 
-def clean(df: pd.DataFrame, out_df_filepath: Path) -> None:
+def clean(df: pd.DataFrame) -> None:
     """Clean the dataframe df and dump the cleaned version to disk.
 
     Args:
@@ -138,6 +139,4 @@ def clean(df: pd.DataFrame, out_df_filepath: Path) -> None:
     # Enforce 1h frequency
     df = _force_1h_frequency(df=df)
 
-    # Dump to output dataframe filepath
-    out_df_filepath.parent.mkdir(parents=True, exist_ok=True)  # Ensure the folderpath exists
-    df.to_pickle(out_df_filepath)
+    return df

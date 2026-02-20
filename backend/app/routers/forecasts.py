@@ -68,7 +68,6 @@ def update_forecast():
 
     # Walk-forward validate the model
     logger.info("Start walk-forward validation of the model...")
-    model = Model(n_estimators=get_settings().MODEL_N_ESTIMATORS)
     latest_load_ts = pd.read_pickle(get_settings().GOLD_DF_FILEPATH).dropna(subset=("24h_later_load")).index.max()
 
     # Figure out ranges to timestamps to test on
@@ -82,6 +81,7 @@ def update_forecast():
 
     # Estimate the MAPE off 10% (17 and 50) of the points for the past week/month
     # To avoid heavy computations
+    model = Model(n_estimators=get_settings().MODEL_N_ESTIMATORS)
     walkforward_yhat = model.train_predict(
         Xy=pd.read_pickle(get_settings().GOLD_DF_FILEPATH),
         query_timestamps=past_24h_timestamps + sample(past_1w_timestamps, 17) + sample(past_4w_timestamps, 50),

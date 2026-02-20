@@ -56,7 +56,7 @@ def _query_load_and_forecast(
         pd.DataFrame: Fetched data.
                         - columns: ('Forcasted Load', 'Actual Load')
                         - dtypes: float64
-                        - index: datetime64[ns, Europe/Zurich]
+                        - index: datetime64[us, Europe/Zurich]
                         Empty dataframe if no data could be found
     """
     if end_ts is None:
@@ -85,7 +85,7 @@ def _query_load_and_forecast(
                 fetched_df = pd.DataFrame(  # empty dataframe
                     columns=["Forecasted Load", "Actual Load"],
                     dtype=float,
-                    index=pd.DatetimeIndex([], dtype="datetime64[ns, Europe/Zurich]"),
+                    index=pd.DatetimeIndex([], dtype="datetime64[us, Europe/Zurich]"),
                 )
                 break
             except requests.ConnectionError as e:
