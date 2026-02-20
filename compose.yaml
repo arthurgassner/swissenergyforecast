@@ -13,17 +13,17 @@ services:
     volumes:
       - swissenergyforecast-backend-data:/code/data
     networks:
-      - swissenergyforecast-net
+      - swissenergyforecast-net 
+      - nginx-proxy-manager-net # So that Nginx Proxy Manager can see these services
 
   frontend:
     build:
       context: .  
       dockerfile: frontend/Dockerfile
     container_name: swissenergyforecast-frontend
-    ports:
-      - "80:80"           
     networks:
       - swissenergyforecast-net
+      - nginx-proxy-manager-net # So that Nginx Proxy Manager can see these services
 
 volumes:
   swissenergyforecast-backend-data:
@@ -32,3 +32,5 @@ volumes:
 networks:
   swissenergyforecast-net:
     driver: bridge
+  nginx-proxy-manager-net:
+    external: true
