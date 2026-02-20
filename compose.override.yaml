@@ -1,5 +1,7 @@
 services:
   backend:
+    ports:
+      - "8000:8000"
     command: ["fastapi", "dev", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
     develop:
       watch:
@@ -9,4 +11,11 @@ services:
           ignore:
             - __pycache__/
         - action: rebuild
-          path: ./uv.lock
+          path: uv.lock
+        - action: rebuild
+          path: compose.yaml
+        - action: rebuild
+          path: compose.override.yaml
+  frontend:
+    ports:
+      - "3000:3000"
