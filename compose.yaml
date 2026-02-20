@@ -11,10 +11,9 @@ services:
     expose:
       - "8000"
     volumes:
-      - swissenergyforecast-backend-data:/code/data
+      - swissenergyforecast-backend-data:/app/data
     networks:
       - swissenergyforecast-net 
-      - npm-net # So that Nginx Proxy Manager can see these services
 
   frontend:
     build:
@@ -23,7 +22,6 @@ services:
     container_name: swissenergyforecast-frontend
     networks:
       - swissenergyforecast-net
-      - npm-net # So that Nginx Proxy Manager can see these services
 
 volumes:
   swissenergyforecast-backend-data:
@@ -32,5 +30,3 @@ volumes:
 networks:
   swissenergyforecast-net:
     driver: bridge
-  npm-net:
-    external: true
