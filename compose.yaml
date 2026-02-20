@@ -14,7 +14,7 @@ services:
       - swissenergyforecast-backend-data:/code/data
     networks:
       - swissenergyforecast-net 
-      - nginx-proxy-manager-net # So that Nginx Proxy Manager can see these services
+      - npm-net # So that Nginx Proxy Manager can see these services
 
   frontend:
     build:
@@ -23,7 +23,7 @@ services:
     container_name: swissenergyforecast-frontend
     networks:
       - swissenergyforecast-net
-      - nginx-proxy-manager-net # So that Nginx Proxy Manager can see these services
+      - npm-net # So that Nginx Proxy Manager can see these services
 
 volumes:
   swissenergyforecast-backend-data:
@@ -32,5 +32,5 @@ volumes:
 networks:
   swissenergyforecast-net:
     driver: bridge
-  nginx-proxy-manager-net:
+  npm-net:
     external: true
