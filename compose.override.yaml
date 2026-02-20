@@ -9,7 +9,7 @@ services:
           path: ./backend
           target: /app/backend
           ignore:
-            - __pycache__/
+            - "**/__pycache__/"
         - action: rebuild
           path: uv.lock
         - action: rebuild
