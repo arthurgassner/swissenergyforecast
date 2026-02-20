@@ -1,0 +1,12 @@
+services:
+  backend:
+    networks:
+      - npm-net # So that Nginx Proxy Manager can see these services
+
+  frontend:
+    networks:
+      - npm-net # So that Nginx Proxy Manager can see these services
+
+networks:
+  npm-net:
+    external: true
