@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import joblib
+from loguru import logger
 import pandas as pd
 
 from app.core.config import Settings

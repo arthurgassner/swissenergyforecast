@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Any
 
+from human_readable import precise_delta
 import pandas as pd
 from pydantic import BaseModel, Field, computed_field
 import pandas as pd
@@ -15,8 +16,14 @@ class MAPE(BaseModel):
     def model_post_init(self, __context: Any) -> None:
         assert len(self.y_true) == len(self.y_pred) == len(self.timestamps)
 
-    def __format__(self) -> str:
-        return str(self)
+    def __format__(self, format_spec) -> str:
+        return f"MAPE [{self.n_samples} timestamps over {self.span_str}]: {self.score:.2f}%"
+
+    @computed_field
+    @property
+    def span_str(self) -> str:
+        human_delta_str = precise_delta(self.end_ts - self.start_ts, minimum_unit="hours")
+        return human_delta_str
     
     @computed_field
     @property
@@ -25,14 +32,14 @@ class MAPE(BaseModel):
     
     @computed_field
     @property
-    def start_ts(self) -> int | None:
+    def start_ts(self) -> datetime | None:
         if not self.timestamps:
             return None
         return min(self.timestamps)
     
     @computed_field
     @property
-    def end_ts(self) -> int | None:
+    def end_ts(self) -> datetime | None:
         if not self.timestamps:
             return None
         return max(self.timestamps)
@@ -88,4 +95,16 @@ class MAPE(BaseModel):
         return mapes 
 
 class Forecast(BaseModel):
-    mapes: list[MAPE]
+    entsoe_mapes: list[MAPE]
+    our_mapes: list[MAPE]
+
+    def __format__(self, format_spec) -> str:
+        formatted_str = "ENSTO-E MAPEs:\n"
+        for e in self.entsoe_mapes:
+            formatted_str += f"- {e}\n"
+
+        formatted_str += "Our MAPEs:\n"
+        for e in self.our_mapes:
+            formatted_str += f"- {e}\n"
+
+        return formatted_str
