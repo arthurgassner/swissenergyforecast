@@ -63,10 +63,8 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     await db_client.save_walkforward_yhat(walkforward_yhat)
 
     y_and_yhat = pd.concat([walkforward_y, walkforward_yhat], axis=1, join="inner")
-    mape = performance_measure_service.compute_mape(
-        y=y_and_yhat["24h_later_load"], yhat=y_and_yhat["predicted_24h_later_load"],
-        timedelta_strs=['1h', '24h', '1w', '4w'],
-    )
+    y, yhat = y_and_yhat["24h_later_load"], y_and_yhat["predicted_24h_later_load"]
+    mape = performance_measure_service.compute_mape(y=y, yhat=yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
     await db_client.save_our_model_mape(mape) 
 
     # Train-predict
