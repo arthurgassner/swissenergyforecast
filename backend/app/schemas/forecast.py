@@ -77,7 +77,7 @@ class MAPE(BaseModel):
         for timedelta_str in sorted(timedelta_strs):
             curr_starting_ts = last_load_ts - pd.to_timedelta(timedelta_str)
             curr_data_mask = y.index >= curr_starting_ts
-            if len(curr_data_mask):
+            if not len(curr_data_mask):
                 mapes.append(MAPE())
                 continue
 
