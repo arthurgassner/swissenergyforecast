@@ -68,7 +68,7 @@ class DBCLient:
 
     async def save_our_model_yhat(self, yhat: pd.Series) -> None:
         """Dump yhat to our model yhat's filepath."""
-        yhat.to_pickle(self._our)
+        yhat.to_pickle(self._our_model_yhat_filepath)
     
     async def load_bronze(self) -> pd.DataFrame:
         """Load df from the bronze filepath."""
