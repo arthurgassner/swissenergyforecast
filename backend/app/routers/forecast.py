@@ -42,25 +42,19 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     # Walk-forward validate the model
     latest_load_ts = await db_client.fetch_latest_load_ts()
 
-    # TODO clean up this part
-    # Figure out ranges to timestamps to test on
-    past_24h_ts = latest_load_ts - timedelta(hours=23)
-    past_1w_ts = latest_load_ts - timedelta(weeks=1)
-    past_4w_ts = latest_load_ts - timedelta(weeks=4)
-
-    past_24h_timestamps = pd.date_range(start=past_24h_ts, end=latest_load_ts, freq="h").to_list()
-    past_1w_timestamps = pd.date_range(start=past_1w_ts, end=past_24h_ts, freq="h").to_list()
-    past_4w_timestamps = pd.date_range(start=past_4w_ts, end=past_1w_ts, freq="h").to_list()
-
-    # Estimate the MAPE off 10% (17 and 50) of the points for the past week/month
-    # To avoid heavy computations
+    # Compute the MAPE over the past week/month.
+    # To avoid heavy computations, we estimate it only measuring on 10% of the timestamps for week and month
+    # (i.e. 17 timestamps of the 170 timestamps in a week, and 50/500 in a month)
+    # We have seen that this is a pretty good estimate
+    query_timestamps = Model.get_hourly_timestamps(start=latest_load_ts - timedelta(hours=23), end=latest_load_ts)
+    query_timestamps += Model.get_hourly_timestamps(start=latest_load_ts - timedelta(weeks=1), end=latest_load_ts - timedelta(hours=23), n_sample=17)
+    query_timestamps += Model.get_hourly_timestamps(start=latest_load_ts - timedelta(weeks=4), end=latest_load_ts - timedelta(weeks=1), n_sample=50)
     model = Model(n_estimators=settings.MODEL_N_ESTIMATORS)
-    query_timestamps = past_24h_timestamps + sample(past_1w_timestamps, 17) + sample(past_4w_timestamps, 50)
-    walkforward_y = lastest_load_and_forecast_df[["24h_later_load"]]
     walkforward_yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps) # TODO move to async ?..
     await db_client.save_walkforward_yhat(walkforward_yhat)
 
-    y_and_yhat = pd.concat([walkforward_y, walkforward_yhat], axis=1, join="inner")
+    # TODO is this contact then split needed ?...
+    y_and_yhat = pd.concat([lastest_load_and_forecast_df[["24h_later_load"]], walkforward_yhat], axis=1, join="inner")
     y, yhat = y_and_yhat["24h_later_load"], y_and_yhat["predicted_24h_later_load"]
     mape = performance_measure_service.compute_mape(y=y, yhat=yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
     await db_client.save_our_model_mape(mape)

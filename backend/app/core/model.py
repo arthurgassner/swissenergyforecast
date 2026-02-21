@@ -1,4 +1,5 @@
 from pathlib import Path
+from random import sample
 
 import lightgbm as lgb
 import numpy as np
@@ -19,6 +20,17 @@ class Model:
         # Create untrained-model
         self._model = lgb.LGBMRegressor(n_estimators=n_estimators, force_row_wise=True, verbose=-1)
 
+    @staticmethod
+    def get_hourly_timestamps(start: pd.Timestamp, end: pd.Timestamp, n_sample: int | None = None) -> list[pd.Timestamp]:
+        """Get hourly timestamps within (start, end) including, 
+        randomly-sampling it (without replacement) if n_sample is provided.
+        """
+        all_hourly_timestamps = pd.date_range(start=start, end=end, freq='h').to_list()
+        if n_sample is None:
+            return all_hourly_timestamps
+
+        return sample(all_hourly_timestamps, n_sample)
+    
     def _train_predict(self, Xy: pd.DataFrame, query_ts: pd.Timestamp) -> float:
         """Train a model on all the features whose index is BEFORE query_ts,
         and run an inference on the features EXACTLY AT query_ts.
