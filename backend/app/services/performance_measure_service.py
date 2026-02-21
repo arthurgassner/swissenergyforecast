@@ -1,7 +1,5 @@
 """Service responsible for measuring the performance of a time-series prediction model."""
 
-from datetime import timedelta
-
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_percentage_error
