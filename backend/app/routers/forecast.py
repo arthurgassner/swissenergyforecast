@@ -22,6 +22,8 @@ router = APIRouter()
 
 @router.put("/forecast/latest")
 async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_client), db_client: DBCLient = Depends(get_db_client), settings: Settings = Depends(get_settings)) -> Forecast:
+    # TODO move to background task
+    
     # Fetch latest loads/forecasts from ENTSOE
     lastest_load_and_forecast_df = entsoe_client.fetch_latest_load_and_forecast()
     await db_client.save_bronze(lastest_load_and_forecast_df) # Dump latest load/forecast to disk 
