@@ -79,6 +79,7 @@ class Model:
             pd.Series: Dataframe with the predicted values under the column 'predicted_24h_later_load'.
                        The index corresponds to the query_timestamps.
         """
+        logger.info(f"Training {len(query_timestamps)} models, for timestamps within {min(query_timestamps)} -> {max(query_timestamps)}")
 
         predicted_values = []
         for query_ts in tqdm(query_timestamps):
