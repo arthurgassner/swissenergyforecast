@@ -50,7 +50,7 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     query_timestamps += Model.get_hourly_timestamps(start=latest_load_ts - timedelta(weeks=1), end=latest_load_ts - timedelta(hours=23), n_sample=17)
     query_timestamps += Model.get_hourly_timestamps(start=latest_load_ts - timedelta(weeks=4), end=latest_load_ts - timedelta(weeks=1), n_sample=50)
     model = Model(n_estimators=settings.MODEL_N_ESTIMATORS)
-    walkforward_yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps) # TODO move to async ?..
+    walkforward_yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps)
     await db_client.save_walkforward_yhat(walkforward_yhat)
 
     # TODO is this contact then split needed ?...
