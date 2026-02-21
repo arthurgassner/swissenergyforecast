@@ -5,7 +5,7 @@ from loguru import logger
 import pandas as pd
 
 from app.core.config import Settings
-from app.schemas.forecast import MAPE
+from app.schemas.forecast import MAPE, Forecast
 
 
 class DBCLient:
@@ -16,19 +16,13 @@ class DBCLient:
         self._bronze_filepath = settings.BRONZE_DF_FILEPATH
         self._silver_filepath = settings.SILVER_DF_FILEPATH
         self._gold_filepath = settings.GOLD_DF_FILEPATH
-        self._entsoe_mape_filepath = settings.ENTSOE_MAPE_FILEPATH
-        self._our_model_mape_filepath = settings.OUR_MODEL_MAPE_FILEPATH
-        self._walkforward_yhat_filepath = settings.WALKFORWARD_YHAT_FILEPATH
-        self._our_model_yhat_filepath = settings.YHAT_FILEPATH
+        self._latest_forecast_filepath = settings.LATEST_FORECAST_FILEPATH
 
         # Ensure the filepaths can be reached
         self._bronze_filepath.parent.mkdir(parents=True, exist_ok=True)
         self._silver_filepath.parent.mkdir(parents=True, exist_ok=True)
         self._gold_filepath.parent.mkdir(parents=True, exist_ok=True)
-        self._entsoe_mape_filepath = settings.ENTSOE_MAPE_FILEPATH
-        self._our_model_mape_filepath.parent.mkdir(parents=True, exist_ok=True)
-        self._walkforward_yhat_filepath.parent.mkdir(parents=True, exist_ok=True)
-        self._our_model_yhat_filepath.parent.mkdir(parents=True, exist_ok=True)
+        self._latest_forecast_filepath.parent.mkdir(parents=True, exist_ok=True)
 
     async def save_bronze(self, df: pd.DataFrame) -> None:
         """Dump df to the bronze filepath."""
@@ -42,22 +36,10 @@ class DBCLient:
         """Dump df to the gold filepath."""
         df.to_pickle(self._gold_filepath)
 
-    async def save_entsoe_mapes(self, mapes: list[MAPE]) -> None:
-        """Dump mape to the ENTSO-E MAPEs filepath."""
-        joblib.dump(mapes, self._entsoe_mape_filepath)
+    async def save_latest_forecast(self, forecast: Forecast) -> None:
+        """Dump forecast to the latest forecast's filepath."""
+        joblib.dump(forecast, self._latest_forecast_filepath)
 
-    async def save_our_model_mapes(self, mapes: list[MAPE]) -> None:
-        """Dump mape to our model's MAPE filepath."""
-        joblib.dump(mapes, self._our_model_mape_filepath)
-    
-    async def save_walkforward_yhat(self, yhat: pd.Series) -> None:
-        """Dump yhat to the walkforward yhat's filepath."""
-        yhat.to_pickle(self._our_model_yhat_filepath)
-
-    async def save_our_model_yhat(self, yhat: pd.Series) -> None:
-        """Dump yhat to our model yhat's filepath."""
-        yhat.to_pickle(self._our_model_yhat_filepath)
-    
     async def load_bronze(self) -> pd.DataFrame:
         """Load df from the bronze filepath."""
         return pd.read_pickle(self._bronze_filepath)
@@ -70,6 +52,9 @@ class DBCLient:
         """Load df from the gold filepath."""
         return pd.read_pickle(self._gold_filepath)
     
+    async def fetch_latest_forecast(self) -> Forecast:
+        return joblib.load(self._latest_forecast_filepath)
+
     async def fetch_latest_load_ts(self) -> pd.Timestamp:
         """Fetch the timestamp of the latest load."""
         gold_df = await self.load_gold()

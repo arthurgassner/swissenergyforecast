@@ -10,10 +10,7 @@ class Settings(BaseSettings):
     BRONZE_DF_FILEPATH: Path = DATA_FOLDERPATH / "bronze" / "df.pickle"
     SILVER_DF_FILEPATH: Path = DATA_FOLDERPATH / "silver" / "df.pickle"
     GOLD_DF_FILEPATH: Path = DATA_FOLDERPATH / "gold" / "df.pickle"
-    WALKFORWARD_YHAT_FILEPATH: Path = DATA_FOLDERPATH / "walkforward_yhat.pickle"
-    YHAT_FILEPATH: Path = DATA_FOLDERPATH / "yhat.pickle"
-    OUR_MODEL_MAPE_FILEPATH: Path = DATA_FOLDERPATH / "our_model_mape.joblib"
-    ENTSOE_MAPE_FILEPATH: Path = DATA_FOLDERPATH / "entsoe_mape.joblib"
+    LATEST_FORECAST_FILEPATH: Path = DATA_FOLDERPATH / "latest_forecast.joblib"
     LOGS_FILEPATH: Path = DATA_FOLDERPATH / "logs" / ".log"
     ENTSOE_API_KEY: str 
     MODEL_N_ESTIMATORS: int

@@ -29,7 +29,6 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     # Measure the ENTSO-E's performance
     y, yhat = lastest_load_and_forecast_df["Actual Load"], lastest_load_and_forecast_df["Forecasted Load"]
     entsoe_mapes = MAPE.compute_mapes(y=y, yhat=yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
-    await db_client.save_entsoe_mapes(entsoe_mapes)
 
     # Clean the data
     lastest_load_and_forecast_df = data_cleaning_service.clean(lastest_load_and_forecast_df)
@@ -37,6 +36,7 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
 
     # Enrich with features
     lastest_load_and_forecast_df = feature_extraction_service.enrich(lastest_load_and_forecast_df)
+    await db_client.save_gold(lastest_load_and_forecast_df) 
 
     # Walk-forward validate the model
     latest_load_ts = await db_client.fetch_latest_load_ts()
@@ -50,19 +50,21 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     query_timestamps += Model.get_hourly_timestamps(start=latest_load_ts - timedelta(weeks=4), end=latest_load_ts - timedelta(weeks=1), n_sample=50)
     model = Model(n_estimators=settings.MODEL_N_ESTIMATORS)
     walkforward_yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps)
-    await db_client.save_walkforward_yhat(walkforward_yhat)
 
     # TODO is this contact then split needed ?...
     y_and_yhat = pd.concat([lastest_load_and_forecast_df[["24h_later_load"]], walkforward_yhat], axis=1, join="inner")
     y, yhat = y_and_yhat["24h_later_load"], y_and_yhat["predicted_24h_later_load"]
     our_mapes = MAPE.compute_mapes(y=y, yhat=yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
-    await db_client.save_our_model_mapes(our_mapes)
 
     # Train-predict
     query_timestamps = [pd.Timestamp(latest_load_ts) + timedelta(hours=i) for i in range(1, 25)]
-    our_model_yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps)
-    await db_client.save_our_model_yhat(our_model_yhat)
+    _ = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps)
 
     forecast = Forecast(entsoe_mapes=entsoe_mapes, our_mapes=our_mapes)
+    await db_client.save_latest_forecast(forecast)
     logger.success(f"Forecast computed:\n{forecast}")
     return forecast
+
+@router.get("/forecast/latest")
+async def get_forecast_latest(db_client: DBCLient = Depends(get_db_client)) -> Forecast:
+    return await db_client.fetch_latest_forecast()

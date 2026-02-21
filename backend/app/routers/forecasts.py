@@ -49,24 +49,3 @@ async def get_fetch_latest_forecast_ts():
         f"Ready to send back the creation timestamp of {get_settings().YHAT_FILEPATH}: {creation_ts} ({datetime.fromtimestamp(creation_ts)})"
     )
     return {"latest_forecast_ts": creation_ts}
-
-
-@router.get("/forecasts/fetch/latest/mape")
-async def get_fetch_latest_mape():
-    # Figure out the ENTSO-E MAPE
-    entsoe_mape = {}
-    if get_settings().ENTSOE_MAPE_FILEPATH.is_file():
-        entsoe_mape = joblib.load(get_settings().ENTSOE_MAPE_FILEPATH)
-
-    # Figure out our model's MAPE
-    our_model_mape = {}
-    if get_settings().OUR_MODEL_MAPE_FILEPATH.is_file():
-        our_model_mape = joblib.load(get_settings().OUR_MODEL_MAPE_FILEPATH)
-
-    mape = {
-        "entsoe_model": entsoe_mape,
-        "our_model": our_model_mape,
-    }
-
-    logger.info(f"Ready to send back the MAPE: {mape}")
-    return mape
