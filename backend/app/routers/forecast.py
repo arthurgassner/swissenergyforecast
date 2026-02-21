@@ -27,10 +27,8 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     await db_client.save_bronze(lastest_load_and_forecast_df) # Dump latest load/forecast to disk 
 
     # Measure the ENTSO-E's performance
-    mape = performance_measure_service.compute_mape(
-        y=lastest_load_and_forecast_df['Actual Load'], yhat=lastest_load_and_forecast_df["Forecasted Load"],
-        timedelta_strs=['1h', '24h', '1w', '4w'],
-    )
+    y, yhat = lastest_load_and_forecast_df["Actual Load"], lastest_load_and_forecast_df["Forecasted Load"]
+    mape = performance_measure_service.compute_mape(y=y, yhat=yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
     await db_client.save_entsoe_mape(mape) 
     logger.info(f"ENTSO-E MAPE: {mape}")
 
