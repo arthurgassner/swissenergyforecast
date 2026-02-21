@@ -40,27 +40,13 @@ class DBCLient:
         """Dump df to the gold filepath."""
         df.to_pickle(self._gold_filepath)
 
-    async def save_entsoe_mape(self, mape_df: pd.DataFrame) -> dict[str, float]:
-        """Dump mape_df to the ENTSO-E MAPE filepath."""
-        mape = {
-            "1h": mape_df.mape.iloc[0],
-            "24h": mape_df.mape.iloc[1],
-            "7d": mape_df.mape.iloc[2],
-            "4w": mape_df.mape.iloc[3],
-        }
+    async def save_entsoe_mape(self, mape: dict[str, float]) -> None:
+        """Dump mape to the ENTSO-E MAPE filepath."""
         joblib.dump(mape, self._entsoe_mape_filepath)
-        return mape
 
-    async def save_our_model_mape(self, mape_df: pd.DataFrame) -> dict[str, float]:
-        """Dump mape_df to our model's MAPE filepath."""
-        mape = {
-            "1h": mape_df.mape.iloc[0],
-            "24h": mape_df.mape.iloc[1],
-            "7d": mape_df.mape.iloc[2],
-            "4w": mape_df.mape.iloc[3],
-        }
+    async def save_our_model_mape(self, mape: dict[str, float]) -> None:
+        """Dump mape to our model's MAPE filepath."""
         joblib.dump(mape, self._our_model_mape_filepath)
-        return mape
     
     async def save_walkforward_yhat(self, yhat: pd.Series) -> None:
         """Dump yhat to the walkforward yhat's filepath."""

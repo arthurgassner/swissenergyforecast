@@ -123,6 +123,8 @@ class ENTSOEClient:
         start_end_timestamps = ENTSOEClient._split_yearly(start_ts, end_ts)
 
         # Send each yearly-query to the ENTSO-E API
+        # TODO run them all in parallel
+        # TODO async ?
         load_and_forecast_dfs = []
         for curr_start_ts, curr_end_ts in start_end_timestamps:
             load_and_forecast_df = self._query_load_and_forecast(curr_start_ts, curr_end_ts)

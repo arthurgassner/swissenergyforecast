@@ -27,11 +27,11 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     await db_client.save_bronze(lastest_load_and_forecast_df) # Dump latest load/forecast to disk 
 
     # Measure the ENTSO-E's performance
-    mape_df = performance_measure_service.compute_mape(
+    mape = performance_measure_service.compute_mape(
         y_true_col="Actual Load", y_pred_col="Forecasted Load", data=lastest_load_and_forecast_df,
-        timedeltas=[timedelta(hours=1), timedelta(hours=24), timedelta(weeks=1), timedelta(weeks=4)],
+        timedelta_strs=['1h', '24h', '1w', '4w'],
     )
-    mape = await db_client.save_entsoe_mape(mape_df) # TODO move mape above
+    await db_client.save_entsoe_mape(mape) 
     logger.info(f"ENTSO-E MAPE: {mape}")
 
     # Clean the data
@@ -62,12 +62,12 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     walkforward_yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps) # TODO move to async ?..
     await db_client.save_walkforward_yhat(walkforward_yhat)
 
-    mape_df = performance_measure_service.compute_mape(
+    mape = performance_measure_service.compute_mape(
         y_true_col="24h_later_load", y_pred_col="predicted_24h_later_load",
         data=pd.concat([walkforward_y, walkforward_yhat], axis=1, join="inner"),
-        timedeltas=[timedelta(hours=1), timedelta(hours=24), timedelta(weeks=1), timedelta(weeks=4)],
+        timedelta_strs=['1h', '24h', '1w', '4w'],
     )
-    mape = await db_client.save_our_model_mape(mape_df) # TODO move mape above
+    await db_client.save_our_model_mape(mape) 
 
     # Train-predict
     query_timestamps = [pd.Timestamp(latest_load_ts) + timedelta(hours=i) for i in range(1, 25)]
