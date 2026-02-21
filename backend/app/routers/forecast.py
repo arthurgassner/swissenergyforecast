@@ -10,12 +10,10 @@ from app.clients.entsoe_client import ENTSOEClient
 from app.core.config import Settings, get_settings
 from app.core.dependencies import get_db_client, get_entsoe_client
 from app.core.model import Model
-from app.schemas.forecast import Forecast
+from app.schemas.forecast import MAPE, Forecast
 from app.services import (
     data_cleaning_service,
-    data_loading_service,
     feature_extraction_service,
-    performance_measure_service,
 )
 
 router = APIRouter()
@@ -30,9 +28,9 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
 
     # Measure the ENTSO-E's performance
     y, yhat = lastest_load_and_forecast_df["Actual Load"], lastest_load_and_forecast_df["Forecasted Load"]
-    mape = performance_measure_service.compute_mape(y=y, yhat=yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
-    await db_client.save_entsoe_mape(mape) 
-    logger.info(f"ENTSO-E MAPE: {mape}")
+    mapes = MAPE.compute_mapes(y=y, yhat=yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
+    await db_client.save_entsoe_mapes(mapes) 
+    logger.info(f"ENTSO-E MAPE: {mapes}")
 
     # Clean the data
     lastest_load_and_forecast_df = data_cleaning_service.clean(lastest_load_and_forecast_df)
@@ -58,13 +56,13 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     # TODO is this contact then split needed ?...
     y_and_yhat = pd.concat([lastest_load_and_forecast_df[["24h_later_load"]], walkforward_yhat], axis=1, join="inner")
     y, yhat = y_and_yhat["24h_later_load"], y_and_yhat["predicted_24h_later_load"]
-    mape = performance_measure_service.compute_mape(y=y, yhat=yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
-    await db_client.save_our_model_mape(mape)
-    logger.info(f"Our model's MAPE: {mape}")
+    mapes = MAPE.compute_mapes(y=y, yhat=yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
+    await db_client.save_our_model_mapes(mapes)
+    logger.info(f"Our model's MAPE: {mapes}")
 
     # Train-predict
     query_timestamps = [pd.Timestamp(latest_load_ts) + timedelta(hours=i) for i in range(1, 25)]
     our_model_yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps)
     await db_client.save_our_model_yhat(our_model_yhat)
 
-    return Forecast()
+    return Forecast(mapes=mapes)

@@ -4,6 +4,7 @@ import joblib
 import pandas as pd
 
 from app.core.config import Settings
+from app.schemas.forecast import MAPE
 
 
 class DBCLient:
@@ -40,13 +41,13 @@ class DBCLient:
         """Dump df to the gold filepath."""
         df.to_pickle(self._gold_filepath)
 
-    async def save_entsoe_mape(self, mape: dict[str, float]) -> None:
-        """Dump mape to the ENTSO-E MAPE filepath."""
-        joblib.dump(mape, self._entsoe_mape_filepath)
+    async def save_entsoe_mapes(self, mapes: list[MAPE]) -> None:
+        """Dump mape to the ENTSO-E MAPEs filepath."""
+        joblib.dump(mapes, self._entsoe_mape_filepath)
 
-    async def save_our_model_mape(self, mape: dict[str, float]) -> None:
+    async def save_our_model_mapes(self, mapes: list[MAPE]) -> None:
         """Dump mape to our model's MAPE filepath."""
-        joblib.dump(mape, self._our_model_mape_filepath)
+        joblib.dump(mapes, self._our_model_mape_filepath)
     
     async def save_walkforward_yhat(self, yhat: pd.Series) -> None:
         """Dump yhat to the walkforward yhat's filepath."""

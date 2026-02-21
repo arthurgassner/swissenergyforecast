@@ -97,7 +97,7 @@ def _enforce_data_quality(df: pd.DataFrame) -> None:
     mask = (df["Actual Load"] <= upper_threshold) | df["Actual Load"].isna()
     if mask.sum() > 0:
         logger.warning(
-            f"Dropping {len(df) - mask.sum()}/{len(df)} rows ({100 * (len(df) - mask.sum()) / len(df):.2f}%) to remove extreme values (>{upper_threshold})."
+            f"Dropping {len(df) - mask.sum()}/{len(df)} rows ({100 * (len(df) - mask.sum()) / len(df):.2f}%) to remove extreme values (>{upper_threshold:.2f})."
         )
     df = df[mask]
 
