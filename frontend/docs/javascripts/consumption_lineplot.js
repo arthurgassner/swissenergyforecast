@@ -19,7 +19,7 @@ async function fetchEntsoeLoads() {
 // Fetch official ENTSO-E forecast data using the range endpoint
 async function fetchEntsoeForecast() {
   // Calculate timestamps for the last 3 days and 1 hour (73 hours total)
-  const endTs = Math.floor(Date.now() / 1000);
+  const endTs = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
   const startTs = endTs - (73 * 60 * 60);
 
   const response = await fetch(`/api/forecast/entsoe/range?start_ts=${startTs}&end_ts=${endTs}`);
