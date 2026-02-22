@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, Type
 
 from human_readable import precise_delta
+from loguru import logger
 import pandas as pd
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field, computed_field, model_validator
 import pandas as pd
 from sklearn.metrics import mean_absolute_percentage_error
 
@@ -99,6 +100,14 @@ class Forecast(BaseModel):
     y_pred: list[float] = Field(default_factory=list)
     entsoe_mapes: list[MAPE] = Field(default_factory=list)
     our_mapes: list[MAPE] = Field(default_factory=list)
+
+    @model_validator(mode='after')
+    def check_same_amount_of_timestamps_and_predictions(self) -> 'Forecast':
+        if len(self.y_pred) != len(self.timestamps):
+            error_str = f"timestamps and y_pred should have the same amount of values, but #timestamps: {len(self.timestamps)} and #y_pred:{len(self.y_pred)}"
+            logger.error(error_str)
+            raise ValueError(error_str)
+        return self
 
     def __format__(self, format_spec) -> str:
         formatted_str = "ENSTO-E MAPEs:\n"
