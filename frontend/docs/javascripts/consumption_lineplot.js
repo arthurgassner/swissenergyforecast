@@ -34,7 +34,8 @@
       y: entsoeLoadsData['day_later_loads'],
       mode: 'lines',
       type: 'scatter',
-      name: 'Actual Load [MW]'
+      name: 'Actual Load [MW]',
+      connectgaps: false
     };
 
     const officialForecastTrace = {
@@ -44,19 +45,21 @@
       type: 'scatter',
       name: 'ENTSO-E\'s previous-day forecasted load [MW]',
       opacity: 0.3,
+      connectgaps: false
     };
 
     const ourForecastTrace = {
       x: forecastData.timestamps.map(t => new Date(new Date(t).getTime() + oneDayInMilliseconds)),
-      y: forecastData.day_later_predicted_loads.map(y => Math.round(y)),
+      // If y is null, keep it null; otherwise round it
+      y: forecastData.day_later_predicted_loads.map(y => y === null ? null : Math.round(y)),
       mode: 'lines',
       type: 'scatter',
-      name: 'Our previous-day forecasted load [MW]'
+      name: 'Our previous-day forecasted load [MW]',
+      connectgaps: false
     };
 
     return [actualLoadTrace, officialForecastTrace, ourForecastTrace];
   }
-
   // Create Plotly layout with the vertical line and "Now" text
   function createLayout() {
       const currentTime = new Date();
