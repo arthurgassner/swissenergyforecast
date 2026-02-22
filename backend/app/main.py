@@ -22,12 +22,12 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, 
 async def middleware(request: Request, call_next):
     start_time_s = time.perf_counter()
 
-    logger.info(f"Received {request.method} on {request.url} from {request.client.host}:{request.client.port}")
-
     response = await call_next(request)
 
     elapsed_time_s = time.perf_counter() - start_time_s
-    logger.info(f"Finished {request.method} {request.url} in {elapsed_time_s * 1e3:.0f}ms")
+    logger.info(
+        f"from {request.client.host}:{request.client.port} | {request.method} {request.url}: {response.status_code} {elapsed_time_s * 1e3:.0f}ms"
+    )
 
     response.headers["X-Process-Time"] = str(elapsed_time_s)
 
