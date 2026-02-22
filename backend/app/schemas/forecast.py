@@ -125,13 +125,13 @@ class MAPE(BaseModel):
 class Forecast(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     timestamps: list[datetime] = Field(default_factory=list)
-    day_later_predicted_load: list[float] = Field(default_factory=list)
+    day_later_predicted_loads: list[float] = Field(default_factory=list)
     mapes: list[MAPE] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def check_same_amount_of_timestamps_and_predictions(self) -> "Forecast":
-        if len(self.day_later_predicted_load) != len(self.timestamps):
-            error_str = f"timestamps and day_later_predicted_load should have the same amount of values, but #timestamps: {len(self.timestamps)} and #day_later_predicted_load: {len(self.day_later_predicted_load)}"
+        if len(self.day_later_predicted_loads) != len(self.timestamps):
+            error_str = f"timestamps and day_later_predicted_load should have the same amount of values, but #timestamps: {len(self.timestamps)} and #day_later_predicted_load: {len(self.day_later_predicted_loads)}"
             logger.error(error_str)
             raise ValueError(error_str)
         return self

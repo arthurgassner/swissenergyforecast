@@ -73,7 +73,7 @@ async def put_forecast_latest(
     )
     yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps)
 
-    forecast = Forecast(day_later_predicted_load=yhat.to_list(), timestamps=yhat.index.to_list(), mapes=custom_mapes)
+    forecast = Forecast(day_later_predicted_loads=yhat.to_list(), timestamps=yhat.index.to_list(), mapes=custom_mapes)
     await db_client.save_latest_forecast(forecast)
     logger.success(f"Forecast computed:\n{forecast}")
     return forecast
@@ -115,6 +115,6 @@ async def get_forecast_entsoe(
 
     return Forecast(
         timestamps=df["24h_later_forecast"].index.to_list(),
-        day_later_predicted_load=df["24h_later_forecast"].to_list(),
+        day_later_predicted_loads=df["24h_later_forecast"].to_list(),
         mapes=mapes,
     )
