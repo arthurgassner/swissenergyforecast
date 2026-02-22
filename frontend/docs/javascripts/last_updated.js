@@ -1,7 +1,7 @@
 async function fetchLastUpdated() {
     try {
         // Reuse the new custom forecast endpoint
-        const response = await fetch('/api/forecast/custom/latest');
+        const response = await fetch('/api/forecast/custom');
         if (!response.ok) {
             throw new Error('Network response was not ok: ' + response.statusText);
         }

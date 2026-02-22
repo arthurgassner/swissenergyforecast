@@ -1,6 +1,6 @@
 // Fetch our latest custom forecast data
   async function fetchForecastData() {
-    const response = await fetch('/api/forecast/custom/latest');
+    const response = await fetch('/api/forecast/custom');
     if (!response.ok) {
       throw new Error('Network response was not ok: ' + response.statusText);
     }
@@ -18,7 +18,7 @@
 
   // Fetch official ENTSO-E forecast data
   async function fetchEntsoeForecast() {
-    const response = await fetch('api/forecast/entsoe?days=3&hours=1');
+    const response = await fetch('api/forecast/entsoe');
     if (!response.ok) {
       throw new Error('Network response was not ok: ' + response.statusText);
     }
