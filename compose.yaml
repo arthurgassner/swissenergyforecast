@@ -11,13 +11,13 @@ services:
     expose:
       - "8000"
     volumes:
-      - swissenergyforecast-backend-data:/app/data
+      - swissenergyforecast-backend-data:/data
     networks:
-      - swissenergyforecast-net 
+      - swissenergyforecast-net
 
   frontend:
     build:
-      context: .  
+      context: .
       dockerfile: frontend/Dockerfile
     container_name: swissenergyforecast-frontend
     networks:

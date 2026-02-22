@@ -7,7 +7,6 @@ from loguru import logger
 
 from app.core.config import get_settings
 from app.routers.entsoe_loads import router as entsoe_loads_router
-from app.routers.forecasts import router as forecasts_loads_router
 from app.routers.forecast import router as forecast_router
 
 logger.remove()
@@ -42,5 +41,4 @@ async def get_root():
 
 
 app.include_router(entsoe_loads_router)
-app.include_router(forecasts_loads_router)
 app.include_router(forecast_router)
