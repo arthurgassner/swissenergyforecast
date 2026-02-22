@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Type
 
 from human_readable import precise_delta
@@ -101,6 +101,7 @@ class MAPE(BaseModel):
         return mapes 
 
 class Forecast(BaseModel):
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     timestamps: list[datetime] = Field(default_factory=list)
     y_pred: list[float] = Field(default_factory=list)
     entsoe_mapes: list[MAPE] = Field(default_factory=list)
