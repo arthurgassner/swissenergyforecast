@@ -32,7 +32,7 @@ def test__format():
     assert (formatted_df.dtypes == "float64").all()  # correct dtype
     assert isinstance(formatted_df.index, pd.DatetimeIndex)
     # correct timezone
-    assert formatted_df.index.dtype == "datetime64[ns, Europe/Zurich]"
+    assert formatted_df.index.dtype == "datetime64[us, Europe/Zurich]"
     # -24h delay post-formatting
     assert (df.index - formatted_df.index == pd.Timedelta(24, "h")).all()
 
@@ -74,7 +74,7 @@ def test__force_1h_frequency():
 
     # dtypes
     assert (enforced_frequency_df.dtypes == "float64").all()  # correct dtype
-    assert enforced_frequency_df.index.dtype == "datetime64[ns, Europe/Zurich]"  # correct timezone
+    assert enforced_frequency_df.index.dtype == "datetime64[us, Europe/Zurich]"  # correct timezone
 
 
 def test__enforce_data_quality():
@@ -126,7 +126,7 @@ def test__enforce_data_quality__index_type():
 
 
 def test__enforce_data_quality__index_tz():
-    """Check that if df.index.dtype != "datetime64[ns, Europe/Zurich]", a ValueError is raised."""
+    """Check that if df.index.dtype != "datetime64[us, Europe/Zurich]", a ValueError is raised."""
 
     # Given a df of the expected format
     df = pd.DataFrame(
