@@ -48,6 +48,7 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     model = Model(n_estimators=settings.MODEL_N_ESTIMATORS)
     walkforward_yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps)
 
+    # Estimate custom model performance
     y = lastest_load_and_forecast_df["24h_later_load"].reindex(walkforward_yhat.index)
     our_mapes = MAPE.compute_mapes(y=y, yhat=walkforward_yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
 
