@@ -268,10 +268,6 @@ def test__enforce_data_quality__index_is_not_unique():
     # when
     index_unique_increasing_df = data_cleaning_service._enforce_data_quality(df)
 
-    print()
-    print(df)
-    print(index_unique_increasing_df)
-
     # then
     assert index_unique_increasing_df.index.is_unique
     assert index_unique_increasing_df.index.is_monotonic_increasing
