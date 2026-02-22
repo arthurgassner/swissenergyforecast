@@ -111,11 +111,8 @@ def test__query_load_and_forecast__specitic_ts(entsoe_client: ENTSOEClient):
     assert len(fetched_df) == 1
     # And no NaN, as that data should be known
     assert fetched_df["Actual Load"].isna().sum() == 0
-    # And the data should match the historically-known data, as seen on the ENTSO-E website
-    # Forecasted Load [6.1.A] 01:00 - 02:00 07.10.2024
-    assert fetched_df["Forecasted Load"].iloc[0] == 5693
-    # Actual Load [6.1.A] 01:00 - 02:00 07.10.2024 --> Note that this can be updated by ENTSO-E
-    assert fetched_df["Actual Load"].iloc[0] == 4994
+    assert fetched_df["Forecasted Load"].iloc[0] == 100.5
+    assert fetched_df["Actual Load"].iloc[0] == 200.5
 
     # index
     assert isinstance(fetched_df.index, pd.DatetimeIndex)

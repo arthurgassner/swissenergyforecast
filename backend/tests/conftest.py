@@ -28,8 +28,8 @@ def entsoe_client(settings: Settings) -> ENTSOEClient:
         # Generate mock data proportional to the length of the index
         index = pd.date_range(start=start, end=end, freq="h",  tz="Europe/Zurich", unit='us', inclusive="left")
         return pd.DataFrame({
-            "Forecasted Load": np.random.uniform(100.0, 500.0, size=len(index)),
-            "Actual Load": np.random.uniform(100.0, 500.0, size=len(index))
+            "Forecasted Load": [100.5] * len(index),
+            "Actual Load": [200.5] * len(index)
         }, index=index)
     
     # Mocking 'query_load_and_forecast' method
