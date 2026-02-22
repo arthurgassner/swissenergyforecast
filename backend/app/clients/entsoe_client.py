@@ -66,7 +66,6 @@ class ENTSOEClient:
             logger.error(error_str)
             raise ValueError(error_str)
         
-
         # Ensure dtypes are as expected
         expected_dtype = 'float64'
         if any(df.dtypes != expected_dtype):

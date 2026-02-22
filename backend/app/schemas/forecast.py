@@ -51,6 +51,29 @@ class MAPE(BaseModel):
         return max(self.timestamps)
     
     @staticmethod
+    def _raise_if_unexpected_format(y: pd.Series) -> None:
+        # Ensure y is actually a Series
+        if type(y) is not pd.Series:
+            error_str = f"y is not a pd.Series; it is: {type(y)}"
+            logger.error(error_str)
+            raise ValueError(error_str)            
+        
+        # Ensure index is unique
+        if not y.index.is_unique:
+            value_counts_df = y.index.value_counts()
+            duplicate_mask = value_counts_df > 1
+            error_str = f"y.index is not unique; {duplicate_mask.sum()}/{len(value_counts_df)} of its unique elements are duplicated: {value_counts_df[duplicate_mask]}"
+            logger.error(error_str)
+            raise ValueError(error_str)
+        
+        # Ensure index is DatetimeIndex
+        if type(y.index) is not pd.DatetimeIndex:
+            error_str = f"y.index is not a pd.DatetimeIndex; it is: {type(y.index)}"
+            logger.error(error_str)
+            raise ValueError(error_str)   
+
+    
+    @staticmethod
     def compute_mapes(y: pd.Series, yhat: pd.Series, timedelta_strs: list[str]) -> list[MAPE]:
         """Measure the Mean Absolute Percentage Error (MAPE) between the ground-truth and a prediction,
         for each timedelta->latest-ts-in-data.index
@@ -69,12 +92,9 @@ class MAPE(BaseModel):
         """
 
         # Check the input is as we expect
-        assert isinstance(y, pd.Series)
-        assert isinstance(yhat, pd.Series)
-        assert y.index.is_unique
-        assert yhat.index.is_unique
-        assert isinstance(y.index, pd.DatetimeIndex)
-        assert isinstance(yhat.index, pd.DatetimeIndex)
+        y = pd.concat([y, y], axis=0)
+        MAPE._raise_if_unexpected_format(y)
+        MAPE._raise_if_unexpected_format(yhat)
         assert len(y) == len(yhat)
         assert (y.index == yhat.index).all()
 
