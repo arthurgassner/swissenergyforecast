@@ -13,6 +13,7 @@ from fastapi.responses import ORJSONResponse
 router = APIRouter()
 
 
+# TODO: rework to support /range format
 # NOTE: ORJSON is faster than standard JSON (rust), and allows for NaN -> null typecasting
 @router.get("/loads", response_class=ORJSONResponse)
 async def get_loads(
@@ -27,7 +28,7 @@ async def get_loads(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No ENTSO-E loads found in the database")
 
     # Figure out since when the records should be sent
-    start_ts = df.index.max() - timedelta(days=days, hours=hours)
+    start_ts = df.index.max() - timedelta(days=days, hours=hours) - timedelta(days=1)
     df = df[df.index > start_ts]
 
     return ENTSOELoads(timestamps=df.index.tolist(), day_later_loads=df["24h_later_load"].tolist())
