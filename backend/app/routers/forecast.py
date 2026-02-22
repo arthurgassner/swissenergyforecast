@@ -1,19 +1,26 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from random import sample
 from uuid import UUID
 
 import pandas as pd
 from app.clients.db_client import DBCLient
 from app.clients.entsoe_client import ENTSOEClient
-from app.core.config import Settings, get_settings
-from app.core.dependencies import get_db_client, get_entsoe_client
+from app.core.config import Settings
+from app.core.config import get_settings
+from app.core.dependencies import get_db_client
+from app.core.dependencies import get_entsoe_client
 from app.core.model import Model
-from app.schemas.forecast import MAPE, Forecast
-from app.services import (
-    data_cleaning_service,
-    feature_extraction_service,
-)
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
+from app.schemas.forecast import MAPE
+from app.schemas.forecast import Forecast
+from app.services import data_cleaning_service
+from app.services import feature_extraction_service
+from fastapi import APIRouter
+from fastapi import BackgroundTasks
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import Query
+from fastapi import status
 from loguru import logger
 
 router = APIRouter()

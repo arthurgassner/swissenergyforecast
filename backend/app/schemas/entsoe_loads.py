@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from loguru import logger
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel
+from pydantic import model_validator
 
 
 class ENTSOELoads(BaseModel):

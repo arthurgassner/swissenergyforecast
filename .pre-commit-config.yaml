@@ -11,7 +11,7 @@ repos:
     rev: 8.0.0
     hooks:
       - id: isort
-        args: ["--profile", "black"] # Avoid conflicts
+        args: ["--profile", "black", "--line-length", "130", "--force-single-line-imports"] # Avoid conflicts
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v4.4.0
     hooks:

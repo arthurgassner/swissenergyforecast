@@ -4,7 +4,8 @@ import time
 from app.core.config import get_settings
 from app.routers.forecast import router as forecast_router
 from app.routers.loads import router as entsoe_loads_router
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
+from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
