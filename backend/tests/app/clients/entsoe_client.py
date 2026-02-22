@@ -41,3 +41,23 @@ def test__split_yearly__end_before_start():
     # When - Then
     with pytest.raises(ValueError):
          ENTSOEClient._split_yearly(start_ts=start_ts, end_ts=end_ts)
+
+def test__query_load_and_forecast__future_ts(entsoe_client: ENTSOEClient):
+    """Querying the ENTSO-E API with a timestamp 48h in the future should result in an empty df."""
+
+    # given
+    future_ts = pd.Timestamp(datetime.now(), tz="Europe/Zurich") + timedelta(hours=48)
+
+    # when
+    fetched_df = entsoe_client._query_load_and_forecast(start_ts=future_ts, end_ts=future_ts + timedelta(hours=24))
+
+    # then
+    expected_df = pd.DataFrame(
+        columns=["Forecasted Load", "Actual Load"],
+        dtype=float,
+        index=pd.DatetimeIndex([], dtype="datetime64[ns, Europe/Zurich]"),
+    )
+    assert (expected_df == fetched_df).all().all()  # same values
+    assert all(c1 == c2 for c1, c2 in zip(expected_df.columns, fetched_df.columns))  # same column names
+    assert (expected_df.dtypes == fetched_df.dtypes).all()  # same dtypes
+    assert (expected_df.index == fetched_df.index).all()  # same index

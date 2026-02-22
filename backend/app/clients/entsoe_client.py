@@ -14,8 +14,8 @@ from app.core.config import Settings
 
 
 class ENTSOEClient:
-    def __init__(self, settings: Settings) -> None:
-        self._entsoe_pandas_client = EntsoePandasClient(api_key=settings.ENTSOE_API_KEY)
+    def __init__(self, entsoe_pandas_client: EntsoePandasClient, settings: Settings) -> None:
+        self._entsoe_pandas_client = entsoe_pandas_client
         self.max_concurrent_requests = settings.MAX_CONCURRENT_REQUESTS
 
     @staticmethod
