@@ -5,8 +5,6 @@ from datetime import timedelta
 import pandas as pd
 import pytest
 from app.clients.entsoe_client import ENTSOEClient
-from app.core.config import get_settings
-from entsoe import EntsoePandasClient
 
 
 def test__split_yearly():
