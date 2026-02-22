@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from random import sample
 
 import pandas as pd
-from fastapi import APIRouter, BackgroundTasks, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from loguru import logger
 
 from app.clients.db_client import DBCLient
@@ -39,7 +39,7 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     await db_client.save_gold(lastest_load_and_forecast_df) 
 
     # Walk-forward validate the model
-    latest_load_ts = await db_client.fetch_latest_load_ts()
+    latest_load_ts = lastest_load_and_forecast_df.dropna(subset=("24h_later_load")).index.max()
 
     # Compute the MAPE over the past week/month.
     # To avoid heavy computations, we estimate it only measuring on 10% of the timestamps for week and month
@@ -51,7 +51,7 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     model = Model(n_estimators=settings.MODEL_N_ESTIMATORS)
     walkforward_yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps)
 
-    y = lastest_load_and_forecast_df.reindex(walkforward_yhat.index)["24h_later_load"]
+    y = lastest_load_and_forecast_df["24h_later_load"].reindex(walkforward_yhat.index)
     our_mapes = MAPE.compute_mapes(y=y, yhat=walkforward_yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
 
     # Train-predict
@@ -65,4 +65,9 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
 
 @router.get("/forecast/latest")
 async def get_forecast_latest(db_client: DBCLient = Depends(get_db_client)) -> Forecast:
-    return await db_client.fetch_latest_forecast()
+    latest_forecast = await db_client.fetch_latest_forecast()
+
+    if latest_forecast is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No forecasts found in the database")
+
+    return latest_forecast

@@ -40,22 +40,29 @@ class DBCLient:
         """Dump forecast to the latest forecast's filepath."""
         joblib.dump(forecast, self._latest_forecast_filepath)
 
-    async def load_bronze(self) -> pd.DataFrame:
+    async def load_bronze(self) -> pd.DataFrame | None:
         """Load df from the bronze filepath."""
+        if not self._bronze_filepath.is_file():
+            return None
+        
         return pd.read_pickle(self._bronze_filepath)
 
-    async def load_silver(self) -> pd.DataFrame:
+    async def load_silver(self) -> pd.DataFrame | None:
         """Load df from the silver filepath."""
+        if not self._silver_filepath.is_file():
+            return None
+        
         return pd.read_pickle(self._silver_filepath)
 
-    async def load_gold(self) -> pd.DataFrame:
+    async def load_gold(self) -> pd.DataFrame | None:
         """Load df from the gold filepath."""
+        if not self._gold_filepath.is_file():
+            return None
+        
         return pd.read_pickle(self._gold_filepath)
     
-    async def fetch_latest_forecast(self) -> Forecast:
+    async def fetch_latest_forecast(self) -> Forecast | None:
+        if not self._latest_forecast_filepath.is_file():
+            return None
+        
         return joblib.load(self._latest_forecast_filepath)
-
-    async def fetch_latest_load_ts(self) -> pd.Timestamp:
-        """Fetch the timestamp of the latest load."""
-        gold_df = await self.load_gold()
-        return gold_df.dropna(subset=("24h_later_load")).index.max()
