@@ -57,8 +57,8 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     our_mapes = MAPE.compute_mapes(y=y, yhat=yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
 
     # Train-predict
-    query_timestamps = [pd.Timestamp(latest_load_ts) + timedelta(hours=i) for i in range(1, 25)]
-    _ = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps)
+    query_timestamps = Model.get_hourly_timestamps(start=latest_load_ts + timedelta(hours=1), end=latest_load_ts + timedelta(hours=24))
+    yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps)
 
     forecast = Forecast(entsoe_mapes=entsoe_mapes, our_mapes=our_mapes)
     await db_client.save_latest_forecast(forecast)

@@ -95,8 +95,10 @@ class MAPE(BaseModel):
         return mapes 
 
 class Forecast(BaseModel):
-    entsoe_mapes: list[MAPE]
-    our_mapes: list[MAPE]
+    timestamps: list[float] = Field(default_factory=list)
+    y_pred: list[float] = Field(default_factory=list)
+    entsoe_mapes: list[MAPE] = Field(default_factory=list)
+    our_mapes: list[MAPE] = Field(default_factory=list)
 
     def __format__(self, format_spec) -> str:
         formatted_str = "ENSTO-E MAPEs:\n"
