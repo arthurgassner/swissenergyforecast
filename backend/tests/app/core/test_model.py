@@ -81,8 +81,6 @@ def test_train_predict__expected_prediction():
     yhat = model.train_predict(Xy, query_timestamps)
 
     # then
-    assert isinstance(yhat, pd.DataFrame)
-    assert len(yhat.columns) == 1
-    assert "predicted_24h_later_load" in yhat.columns
-    assert yhat["predicted_24h_later_load"].dtype == "float64"
+    assert isinstance(yhat, pd.Series)
+    assert yhat.dtype == "float64"
     assert len(yhat) == len(query_timestamps)
