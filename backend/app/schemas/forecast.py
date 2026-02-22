@@ -1,13 +1,9 @@
-from datetime import datetime
-from datetime import timezone
+from datetime import datetime, timezone
 
 import pandas as pd
 from human_readable import precise_delta
 from loguru import logger
-from pydantic import BaseModel
-from pydantic import Field
-from pydantic import computed_field
-from pydantic import model_validator
+from pydantic import BaseModel, Field, computed_field, model_validator
 from sklearn.metrics import mean_absolute_percentage_error
 
 

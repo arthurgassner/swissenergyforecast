@@ -1,8 +1,7 @@
 import joblib
 import pandas as pd
 from app.core.config import Settings
-from app.schemas.forecast import MAPE
-from app.schemas.forecast import Forecast
+from app.schemas.forecast import MAPE, Forecast
 
 
 class DBClient:

@@ -3,11 +3,7 @@ from datetime import timedelta
 from app.clients.db_client import DBClient
 from app.core.dependencies import get_db_client
 from app.schemas.entsoe_loads import ENTSOELoads
-from fastapi import APIRouter
-from fastapi import Depends
-from fastapi import HTTPException
-from fastapi import Query
-from fastapi import status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import ORJSONResponse
 
 router = APIRouter()

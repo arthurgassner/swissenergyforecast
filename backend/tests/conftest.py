@@ -1,13 +1,11 @@
 from datetime import datetime
-from unittest.mock import MagicMock
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 import numpy as np
 import pandas as pd
 import pytest
 from app.clients.entsoe_client import ENTSOEClient
-from app.core.config import Settings
-from app.core.config import get_settings
+from app.core.config import Settings, get_settings
 
 
 @pytest.fixture
