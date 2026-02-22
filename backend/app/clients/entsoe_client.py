@@ -141,7 +141,7 @@ class ENTSOEClient:
         raised_exceptions = [(idx, e) for idx, e in enumerate(load_and_forecast_dfs) if isinstance(e, Exception)]
         if raised_exceptions:
             for idx, e in raised_exceptions:
-                logger.error(f"Couldn't fetch ENTSO-E data from {start_end_timestamps[i][0]} -> {start_end_timestamps[i][1]}")      
+                logger.error(f"Couldn't fetch ENTSO-E data from {start_end_timestamps[idx][0]} -> {start_end_timestamps[idx][1]}")      
             raise RuntimeError(f"Fetching data from ENTSO-E API raised: {raised_exceptions}")
         
         return pd.concat(load_and_forecast_dfs)
