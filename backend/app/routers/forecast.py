@@ -50,13 +50,13 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
 
     # Estimate custom model performance
     y = lastest_load_and_forecast_df["24h_later_load"].reindex(walkforward_yhat.index)
-    our_mapes = MAPE.compute_mapes(y=y, yhat=walkforward_yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
+    custom_mapes = MAPE.compute_mapes(y=y, yhat=walkforward_yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
 
     # Train-predict
     query_timestamps = Model.get_hourly_timestamps(start=latest_load_ts + timedelta(hours=1), end=latest_load_ts + timedelta(hours=24))
     yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps)
 
-    forecast = Forecast(day_later_predicted_load=yhat.to_list(), timestamps=yhat.index.to_list(), mapes=our_mapes)
+    forecast = Forecast(day_later_predicted_load=yhat.to_list(), timestamps=yhat.index.to_list(), mapes=custom_mapes)
     await db_client.save_latest_forecast(forecast)
     logger.success(f"Forecast computed:\n{forecast}")
     return forecast
