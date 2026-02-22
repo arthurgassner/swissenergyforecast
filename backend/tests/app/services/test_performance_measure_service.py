@@ -3,8 +3,6 @@ from datetime import timedelta
 import numpy as np
 import pandas as pd
 
-from app.services import performance_measure_service
-
 
 def test_compute_mape__perfect_prediction():
     """Check that the MAPE of a perfect prediction is 0.0."""

@@ -85,7 +85,7 @@ class MAPE(BaseModel):
             y (pd.Series): Ground-truth's Series, with pd.DatetimeIndex index
             yhat (pd.Series): Prediction's Series, with pd.DatetimeIndex index
             timedelta_strs (list[str]): Timedeltas from which we should compute the MAPE, starting at the latest ts in `data`.
-                                        Each timedelta_str must be in the format expected by pd.to_timedelta, e.g. '7w1d2h' or '1d' 
+                                        Each timedelta_str must be in the format expected by pd.to_timedelta, e.g. '7w1D2h' or '1D' 
 
         Returns:
             list[MAPE]: Computed MAPEs
