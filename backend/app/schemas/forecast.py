@@ -14,9 +14,14 @@ class MAPE(BaseModel):
     y_true: list[float] = Field(default_factory=list)
     y_pred: list[float] = Field(default_factory=list)
 
-    def model_post_init(self, __context: Any) -> None:
-        assert len(self.y_true) == len(self.y_pred) == len(self.timestamps)
-
+    @model_validator(mode='after')
+    def check_same_amount_of_timestamps_and_predictions(self) -> 'MAPE':
+        if len(self.y_pred) != len(self.timestamps):
+            error_str = f"timestamps, y_true and y_pred should have the same amount of values, but #timestamps: {len(self.timestamps)}, #y_true: {len(self.y_true)} and #y_pred: {len(self.y_pred)}"
+            logger.error(error_str)
+            raise ValueError(error_str)
+        return self
+    
     def __format__(self, format_spec) -> str:
         return f"MAPE [{self.n_samples} timestamps over {self.span_str}]: {self.score:.2f}%"
 
@@ -104,7 +109,7 @@ class Forecast(BaseModel):
     @model_validator(mode='after')
     def check_same_amount_of_timestamps_and_predictions(self) -> 'Forecast':
         if len(self.y_pred) != len(self.timestamps):
-            error_str = f"timestamps and y_pred should have the same amount of values, but #timestamps: {len(self.timestamps)} and #y_pred:{len(self.y_pred)}"
+            error_str = f"timestamps and y_pred should have the same amount of values, but #timestamps: {len(self.timestamps)} and #y_pred: {len(self.y_pred)}"
             logger.error(error_str)
             raise ValueError(error_str)
         return self
