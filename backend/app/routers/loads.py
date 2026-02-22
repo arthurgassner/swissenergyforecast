@@ -13,8 +13,8 @@ router = APIRouter()
 # NOTE: ORJSON is faster than standard JSON (rust), and allows for NaN -> null typecasting
 @router.get("/loads", response_class=ORJSONResponse)
 async def get_loads(
-    days: int = Query(0, ge=0, description="How many days to look back"),
-    hours: int = Query(0, ge=0, description="How many hours to look back"),
+    days: int = Query(0, ge=0, le=10, description="How many days to look back"),
+    hours: int = Query(0, ge=0, le=24, description="How many hours to look back"),
     db_client: DBClient = Depends(get_db_client),
 ) -> ENTSOELoads:
 
