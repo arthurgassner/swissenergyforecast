@@ -1,36 +1,48 @@
-// Fetch MAPE data (GET request)
+// Fetch MAPE data from both endpoints concurrently
 async function fetchMapeData() {
-    const response = await fetch('/api/forecasts/fetch/latest/mape');
-    if (!response.ok) {
-        throw new Error('Network response was not ok: ' + response.statusText);
+    const [entsoeResponse, customResponse] = await Promise.all([
+        fetch('/api/forecast/entsoe/mapes'),
+        fetch('/api/forecast/custom/mapes')
+    ]);
+
+    if (!entsoeResponse.ok) {
+        throw new Error('ENTSO-E network response was not ok: ' + entsoeResponse.statusText);
     }
-    return response.json();
+    if (!customResponse.ok) {
+        throw new Error('Custom model network response was not ok: ' + customResponse.statusText);
+    }
+
+    const entsoeData = await entsoeResponse.json();
+    const customData = await customResponse.json();
+
+    // Return combined data
+    return {
+        entsoe: entsoeData,
+        custom: customData
+    };
+}
+
+// Helper function to format duration strings
+function formatDuration(duration) {
+    if (duration === '7d') return '1 week';
+    if (duration === '4w') return '1 month';
+    return duration;
 }
 
 // Create Plotly traces for the bar plot
 function createBarTraces(mapeData) {
-    // Extract durations and MAPE values
-    const durationsEntsoe = Object.keys(mapeData.entsoe_model).map(duration => {
-        if (duration === '7d') return '1 week';
-        if (duration === '4w') return '1 month';
-        return duration;
-    }); // ['1h', '24h', '1 week', '1 month']
+    // Extract durations and MAPE values (scores) from the new array schemas
+    const durationsEntsoe = mapeData.entsoe.map(item => formatDuration(item.label));
+    const mapeEntsoe = mapeData.entsoe.map(item => item.score);
 
-    const mapeEntsoe = Object.values(mapeData.entsoe_model);    // Corresponding MAPE values
-
-    const durationsOurModel = Object.keys(mapeData.our_model).map(duration => {
-        if (duration === '7d') return '1 week';
-        if (duration === '4w') return '1 month';
-        return duration;
-    });  // ['1h', '24h', '1 week', '1 month']
-
-    const mapeOurModel = Object.values(mapeData.our_model);     // Corresponding MAPE values
+    const durationsOurModel = mapeData.custom.map(item => formatDuration(item.label));
+    const mapeOurModel = mapeData.custom.map(item => item.score);
 
     // Calculate error bars for Our Model
     const errorBars = durationsOurModel.map((duration, index) => {
-        // Check if the duration is "1 week" or "1 month" and apply 10% error
+        // Check if the duration is "1 week" or "1 month" and apply 5% error
         if (duration === '1 week' || duration === '1 month') {
-            return 0.05 * mapeOurModel[index]; // 10% of the MAPE value
+            return 0.05 * mapeOurModel[index]; // 5% of the MAPE value
         }
         return 0; // No error for other durations
     });
@@ -58,7 +70,6 @@ function createBarTraces(mapeData) {
 
     return [entsoeTrace, ourModelTrace];
 }
-
 
 // Create layout for the bar plot
 function createBarLayout() {
@@ -111,4 +122,4 @@ async function main() {
 }
 
 // Initialize when DOM content is loaded
-// document.addEventListener("DOMContentLoaded", main);
+document.addEventListener("DOMContentLoaded", main);

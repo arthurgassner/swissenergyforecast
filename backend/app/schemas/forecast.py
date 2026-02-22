@@ -12,6 +12,7 @@ from sklearn.metrics import mean_absolute_percentage_error
 
 
 class MAPE(BaseModel):
+    label: str
     score: float | None = Field(default=None)
     timestamps: list[datetime] = Field(default_factory=list)
     y_true: list[float] = Field(default_factory=list)
@@ -26,11 +27,14 @@ class MAPE(BaseModel):
         return self
 
     def __format__(self, format_spec) -> str:
-        return f"MAPE [{self.n_samples} timestamps over {self.span_str}]: {self.score:.2f}%"
+        return f"MAPE [{self.n_samples} timestamps over {self.min_max_str}]: {self.score:.2f}%"
 
     @computed_field
     @property
-    def span_str(self) -> str:
+    def min_max_str(self) -> str:
+        if self.end_ts is None or self.start_ts is None:
+            return "nodate -> nodate"
+
         human_delta_str = precise_delta(self.end_ts - self.start_ts, minimum_unit="hours")
         return human_delta_str
 
@@ -112,12 +116,14 @@ class MAPE(BaseModel):
             curr_starting_ts = last_load_ts - pd.to_timedelta(timedelta_str)
             curr_data_mask = y.index >= curr_starting_ts
             if not len(curr_data_mask):
-                mapes.append(MAPE())
+                mapes.append(MAPE(label=timedelta_str))
                 continue
 
             y_true, y_pred = y[curr_data_mask], yhat[curr_data_mask]
             curr_score = mean_absolute_percentage_error(y_true=y_true, y_pred=y_pred) * 100
-            mapes.append(MAPE(score=curr_score, timestamps=y.index[curr_data_mask], y_true=y_true, y_pred=y_pred))
+            mapes.append(
+                MAPE(label=timedelta_str, score=curr_score, timestamps=y.index[curr_data_mask], y_true=y_true, y_pred=y_pred)
+            )
 
         return mapes
 
