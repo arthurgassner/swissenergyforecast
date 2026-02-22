@@ -103,7 +103,7 @@ class MAPE(BaseModel):
 class Forecast(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     timestamps: list[datetime] = Field(default_factory=list)
-    y_pred: list[float] = Field(default_factory=list)
+    day_later_predicted_load: list[float] = Field(default_factory=list)
     entsoe_mapes: list[MAPE] = Field(default_factory=list)
     our_mapes: list[MAPE] = Field(default_factory=list)
 
