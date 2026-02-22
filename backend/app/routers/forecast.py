@@ -73,7 +73,7 @@ async def get_forecast_custom_latest(db_client: DBCLient = Depends(get_db_client
 
 @router.get("/forecast/custom/{forecast_id}")
 async def get_forecast_custom_forecast_id(forecast_id: UUID, db_client: DBCLient = Depends(get_db_client)) -> Forecast:
-    return Forecast()
+    raise NotImplementedError()
 
 
 @router.get("/forecast/entsoe")
