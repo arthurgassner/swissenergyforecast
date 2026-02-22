@@ -115,6 +115,9 @@ async def get_forecast_entsoe_range(
 ) -> Forecast:
     """Fetch ENTSO-E forecasts between two specific timestamps."""
 
+    if start_ts > end_ts:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="start_ts should be <= end_ts")
+
     # Load past loads
     df = await db_client.load_silver()
     if df is None:
