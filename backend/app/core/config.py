@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     LOGS_FILEPATH: Path = DATA_FOLDERPATH / "logs" / ".log"
     ENTSOE_API_KEY: str 
     MODEL_N_ESTIMATORS: int
+    MAX_CONCURRENT_REQUESTS: int = 10
 
 @lru_cache
 def get_settings() -> Settings:

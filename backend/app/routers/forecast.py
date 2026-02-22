@@ -24,7 +24,7 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     # TODO move to background task
     
     # Fetch latest loads/forecasts from ENTSOE
-    lastest_load_and_forecast_df = entsoe_client.fetch_latest_load_and_forecast()
+    lastest_load_and_forecast_df = await entsoe_client.fetch_latest_load_and_forecast()
     await db_client.save_bronze(lastest_load_and_forecast_df) # Dump latest load/forecast to disk 
 
     # Clean the data
