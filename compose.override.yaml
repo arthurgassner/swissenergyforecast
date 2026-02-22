@@ -18,4 +18,17 @@ services:
           path: compose.override.yaml
   frontend:
     ports:
-      - "3000:3000"
+      - "3000:80"
+    develop:
+      watch:
+        - action: sync
+          path: frontend
+          target: /src
+          ignore:
+            - "**/__pycache__/"
+        - action: rebuild
+          path: uv.lock
+        - action: rebuild
+          path: compose.yaml
+        - action: rebuild
+          path: compose.override.yaml

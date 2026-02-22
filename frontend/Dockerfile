@@ -1,5 +1,6 @@
 # Build stage
 FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS builder
+WORKDIR /src
 
 # Install all dependencies
 ENV UV_COMPILE_BYTECODE=1
@@ -11,7 +12,6 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=frontend/pyproject.toml,target=frontend/pyproject.toml \
     uv sync --frozen --no-install-project --no-dev --project frontend
 
-WORKDIR /app
 COPY . .
 
 # Rely on cache to build static site
@@ -20,8 +20,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # Run stage
 FROM nginx:alpine
+WORKDIR /src
+
 # NOTE: mkdocs defaults to the site/ folder
-COPY --from=builder /app/frontend/site /usr/share/nginx/html
+COPY --from=builder /src/frontend/site /usr/share/nginx/html
 COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
