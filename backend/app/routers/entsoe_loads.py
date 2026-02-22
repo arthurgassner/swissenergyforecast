@@ -15,7 +15,7 @@ from app.schemas.entsoe_loads import (
 
 router = APIRouter()
 
-
+# NOTE: ORJSON is faster than standard JSON (rust), and allows for NaN -> null typecasting
 @router.get("/loads", response_class=ORJSONResponse)
 async def get_loads(
     days: int = Query(0, ge=0, description="How many days to look back"),
@@ -24,15 +24,12 @@ async def get_loads(
     ) -> ENTSOELoads:
 
     # Load past loads
-    silver_df = await db_client.load_silver()
-    if silver_df is None:
+    df = await db_client.load_silver()
+    if df is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No ENTSO-E loads found in the database")
 
-    # Figure out till when the records should be sent
-    end_ts = silver_df.index.max()
-    cutoff_ts = end_ts - timedelta(days=days, hours=hours)
+    # Figure out since when the records should be sent
+    start_ts = df.index.max() - timedelta(days=days, hours=hours)
+    df = df[df.index > start_ts]
 
-    # Only keep the data till
-    silver_df = silver_df[silver_df.index > cutoff_ts]
-
-    return ENTSOELoads(timestamps=silver_df.index.tolist(), day_later_loads=silver_df["24h_later_load"].astype(float).tolist())
+    return ENTSOELoads(timestamps=df.index.tolist(), day_later_loads=df["24h_later_load"].tolist())

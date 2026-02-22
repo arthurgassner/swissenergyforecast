@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
 from random import sample
+from uuid import UUID
 
 import pandas as pd
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from loguru import logger
 
 from app.clients.db_client import DBCLient
@@ -25,10 +26,6 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     # Fetch latest loads/forecasts from ENTSOE
     lastest_load_and_forecast_df = entsoe_client.fetch_latest_load_and_forecast()
     await db_client.save_bronze(lastest_load_and_forecast_df) # Dump latest load/forecast to disk 
-
-    # Measure the ENTSO-E's performance
-    y, yhat = lastest_load_and_forecast_df["Actual Load"], lastest_load_and_forecast_df["Forecasted Load"]
-    entsoe_mapes = MAPE.compute_mapes(y=y, yhat=yhat, timedelta_strs=['1h', '24h', '1w', '4w'])
 
     # Clean the data
     lastest_load_and_forecast_df = data_cleaning_service.clean(lastest_load_and_forecast_df)
@@ -58,16 +55,42 @@ async def put_forecast_latest(entsoe_client: ENTSOEClient = Depends(get_entsoe_c
     query_timestamps = Model.get_hourly_timestamps(start=latest_load_ts + timedelta(hours=1), end=latest_load_ts + timedelta(hours=24))
     yhat = model.train_predict(Xy=lastest_load_and_forecast_df, query_timestamps=query_timestamps)
 
-    forecast = Forecast(day_later_predicted_load=yhat.to_list(), timestamps=yhat.index.to_list(), entsoe_mapes=entsoe_mapes, our_mapes=our_mapes)
+    forecast = Forecast(day_later_predicted_load=yhat.to_list(), timestamps=yhat.index.to_list(), mapes=our_mapes)
     await db_client.save_latest_forecast(forecast)
     logger.success(f"Forecast computed:\n{forecast}")
     return forecast
 
-@router.get("/forecast/latest")
-async def get_forecast_latest(db_client: DBCLient = Depends(get_db_client)) -> Forecast:
+
+@router.get("/forecast/custom/latest")
+async def get_forecast_custom_latest(db_client: DBCLient = Depends(get_db_client)) -> Forecast:
     latest_forecast = await db_client.fetch_latest_forecast()
 
     if latest_forecast is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No forecasts found in the database")
 
     return latest_forecast
+
+@router.get("/forecast/custom/{forecast_id}")
+async def get_forecast_custom_forecast_id(forecast_id: UUID, db_client: DBCLient = Depends(get_db_client)) -> Forecast:
+    return Forecast()
+
+
+@router.get("/forecast/entsoe")
+async def get_forecast_entsoe(
+    days: int = Query(0, ge=0, description="How many days to look back"),
+    hours: int = Query(0, ge=0, description="How many hours to look back"),
+    db_client: DBCLient = Depends(get_db_client)) -> Forecast:
+
+    # Load past loads
+    df = await db_client.load_silver()
+    if df is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No ENTSO-E loads found in the database")
+
+    # Figure out since when the records should be sent
+    start_ts = df.index.max() - timedelta(days=days, hours=hours)
+    df = df[df.index > start_ts]
+
+    # Measure the ENTSO-E performance
+    mapes = MAPE.compute_mapes(y=df["24h_later_load"], yhat=df["24h_later_forecast"], timedelta_strs=['1h', '24h', '1w', '4w'])
+
+    return Forecast(timestamps=df["24h_later_forecast"].index.to_list(), day_later_predicted_load=df["24h_later_forecast"].to_list(), mapes=mapes)

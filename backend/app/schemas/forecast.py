@@ -104,24 +104,19 @@ class Forecast(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     timestamps: list[datetime] = Field(default_factory=list)
     day_later_predicted_load: list[float] = Field(default_factory=list)
-    entsoe_mapes: list[MAPE] = Field(default_factory=list)
-    our_mapes: list[MAPE] = Field(default_factory=list)
+    mapes: list[MAPE] = Field(default_factory=list)
 
     @model_validator(mode='after')
     def check_same_amount_of_timestamps_and_predictions(self) -> 'Forecast':
-        if len(self.y_pred) != len(self.timestamps):
-            error_str = f"timestamps and y_pred should have the same amount of values, but #timestamps: {len(self.timestamps)} and #y_pred: {len(self.y_pred)}"
+        if len(self.day_later_predicted_load) != len(self.timestamps):
+            error_str = f"timestamps and day_later_predicted_load should have the same amount of values, but #timestamps: {len(self.timestamps)} and #day_later_predicted_load: {len(self.day_later_predicted_load)}"
             logger.error(error_str)
             raise ValueError(error_str)
         return self
 
     def __format__(self, format_spec) -> str:
-        formatted_str = "ENSTO-E MAPEs:\n"
-        for e in self.entsoe_mapes:
-            formatted_str += f"- {e}\n"
-
-        formatted_str += "Our MAPEs:\n"
-        for e in self.our_mapes:
+        formatted_str = "MAPEs:\n"
+        for e in self.mapes:
             formatted_str += f"- {e}\n"
 
         return formatted_str
