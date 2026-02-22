@@ -16,14 +16,14 @@ Let's go back to our business problem:
     We don't know how said consumption will evolve in the future, and it would help us to know.
 
 We want -- equipped with our new understanding of the context, constraints and needs of our business -- to solve this problem.
-To solve it, we first need to translate it into a _**modelling task**_, i.e. to formulate it in terms of input, machine learning model and output. 
+To solve it, we first need to translate it into a _**modelling task**_, i.e. to formulate it in terms of input, machine learning model and output.
 
-There are several correct ways to do so. 
+There are several correct ways to do so.
 In our case, we take inspiration from the way the ENTSO-E names their own prediction, i.e -- `Day-ahead Total Load Forecast` -- and assume that they forecast the consumption between `t` and `t + 1h` using the data available a a full day before `t`.[^1]
 
 [^1]: As I would figure out later, forecasts are usually added to the ENTSO-E website in bulk, at around 05:41 in the morning. Still, we picked this approach and are sticking with it. It is interesting to note that I _assumed_ that's how they generated their predictions, and should have asked them directly via email -- as outlined in the motivation part of this writeup.
 
-Our modelling task could then be formulated as such: 
+Our modelling task could then be formulated as such:
 
 !!! abstract "Modelling task"
     At time `t`, given all the load data prior to `t`, predict the load in MW at `t + 24h`
@@ -63,16 +63,16 @@ Really, we have to choose how complex[^3] our first attempt at modelling should 
 
 [^3]: When I talk about complexity here, I don't mean amount of parameters -- although it is usually correlated -- but complexity of the overall ML lifecycle of our approach. We are building a full-fledged solution -- along with tooling to maintain, fix and update our solution. Its complexity goes beyond how many fake-neurons our model has.
 
-Young and freshly out-of-college, we could let our excitement win and dive straight into implementing the most complex ML-based time-series prediction model. Assuming that surely complexity and modernity are synonymous with performance, _right_? This would be a mistake, as our goal is _not_ to build the best model, but to answer the need of the business.[^4] 
+Young and freshly out-of-college, we could let our excitement win and dive straight into implementing the most complex ML-based time-series prediction model. Assuming that surely complexity and modernity are synonymous with performance, _right_? This would be a mistake, as our goal is _not_ to build the best model, but to answer the need of the business.[^4]
 
 [^4]: If that's what you want to do, academy/research has a higher density of such problem statements.
 
 !!! tip "There is such a thing as good-enough"
     Most industry problems have a "this is good-enough" threshold.
 
-This "good-enough" threshold is the lowest performance that satisfies the needs of the business. It's often hard to express in hard numbers, and comes from understanding the business needs. Often, you will end up with an approximation acting as a proxy, meaning that a model performing up to that standard _should_ fulfill those needs.[^5] 
+This "good-enough" threshold is the lowest performance that satisfies the needs of the business. It's often hard to express in hard numbers, and comes from understanding the business needs. Often, you will end up with an approximation acting as a proxy, meaning that a model performing up to that standard _should_ fulfill those needs.[^5]
 
-[^5]: Here we talk about performance as if it was uni-dimensional. It rarely is. You should consider -- amongst other things -- the raw performance, the inference time, the ease of maintenance, the explainability, the upfront training cost and the deployment cost. 
+[^5]: Here we talk about performance as if it was uni-dimensional. It rarely is. You should consider -- amongst other things -- the raw performance, the inference time, the ease of maintenance, the explainability, the upfront training cost and the deployment cost.
 
 <figure markdown="span">
   ![Image title](assets/modelling/complexity_performance__good_enough.png){ width="80%"}
@@ -92,7 +92,7 @@ We **really** should start simple, for many reasons:
 
 !!! tip "Please"
     Start simple[^6]
-				
+
 
 [^6]: I am _by far_ not the first person to make that point -- with KISS being one example of it -- but it's so easy to forget that I think it's important to hammer it in.
 
@@ -108,7 +108,7 @@ From that point on, we can add complexity step-by-step, till we -- hopefully -- 
 As we try different approaches, we should be mindful that we are facing a performance upper-bound.
 
 !!! tip "Performance upper-bound"
-    Most prediction problems have a performance upper-bound.							 
+    Most prediction problems have a performance upper-bound.
 
 That is, there is _in almost all cases_ some amount of randomness when predicting the future from a given set of observations. A direct consequence of that is that regardless of how good your model is, you will not be able to perfectly predict the future.
 
@@ -118,7 +118,7 @@ That is, there is _in almost all cases_ some amount of randomness when predictin
 </figure>
 
 All you can do is hope that this upper-bound is above the "good-enough" threshold.
-Akin to the "good-enough" threshold, this upper-bound is rarely available to us. 
+Akin to the "good-enough" threshold, this upper-bound is rarely available to us.
 What we can do is measure the human-level performance on that task, which would give us a lower-bound to that upper-bound.
 
 <figure markdown="span">
@@ -128,7 +128,7 @@ What we can do is measure the human-level performance on that task, which would 
 
 Now that we've talked _extensively_ about where to start, let's actually start modelling.
 
-## Dummy Baseline 
+## Dummy Baseline
 
 Back to our wrangled dataset:
 
@@ -155,21 +155,21 @@ We'll start with the following dummy baseline:
     df['24h_ago_load'] = df['24h_later_load'].shift(48)
 
     # Only consider the last year
-    with_load_latest_ts = df[~df['24h_later_load'].isna()].index.max() 
+    with_load_latest_ts = df[~df['24h_later_load'].isna()].index.max()
     df = df[df.index >= with_load_latest_ts - timedelta(days=365)]
 
     # Build y_true and y_pred
     df = df.dropna()
     y_true = df['24h_later_load']
     y_pred = df['24h_ago_load']
-    print(f'MAPE over the last year: {mean_absolute_percentage_error(y_true, y_pred) * 100:.2f}%') 
+    print(f'MAPE over the last year: {mean_absolute_percentage_error(y_true, y_pred) * 100:.2f}%')
     # MAPE over the last year: 8.97%
 
     # Plot the last month
     df = df[df.index >= df.index.max() - timedelta(days=30)]
 
     fig = px.line(
-        df, x=df.index, y=['24h_later_load', '24h_ago_load'], 
+        df, x=df.index, y=['24h_later_load', '24h_ago_load'],
         title='Actual load and dummy forecast over the last month',
         labels={'index': 'Date', 'value': 'Load [MW]', 'variable': ''}
     )
@@ -208,7 +208,7 @@ Now, before we dive into training -- and testing -- an LightGBM-based model -- a
 
 Our problem looks like a classic regression task. As such, one might feel enclined to follow the classic regression-task flow, i.e.
 
-1. Randomly divide the data into train and test sets 
+1. Randomly divide the data into train and test sets
 2. Train some model on the train set
 3. Test that trained model on the test set
 
@@ -227,7 +227,7 @@ How does that impact us in our time-series prediction task? Well, by randomly di
 
 <iframe src="../assets/modelling/interpolation_extrapolation.html" width="100%" height="300"></iframe>
 
-Hence, whenever the data we are feeding our model is time-sensitive -- even if not explicitely a time-series -- we should split the train and test set time-wise. 
+Hence, whenever the data we are feeding our model is time-sensitive -- even if not explicitely a time-series -- we should split the train and test set time-wise.
 
 !!! tip "Predict the future from the past, not the future"
     Whenever the data is time-sensitive[^9], split it time-wise.
@@ -240,11 +240,11 @@ Hence, to predict the next 24h -- 24 predictions -- we'll train 24 models.
 
 ### Naive LightGBM
 
-Back to our gradient-boosted trees, let's build a LightGBM model leveraging the same data as our dummy model, i.e. the load 24h ago. 
+Back to our gradient-boosted trees, let's build a LightGBM model leveraging the same data as our dummy model, i.e. the load 24h ago.
 
 We build it incorporating the walk-forward strategy -- and test it as such -- over the last year. Note that this means training 8760[^10] models, one for each hour in a year.
 
-[^10]: `24 * 365 == 8760` 
+[^10]: `24 * 365 == 8760`
 
 ??? note "Train-test a LightGBM model, with walk-forward validation"
     ```python
@@ -271,8 +271,8 @@ We build it incorporating the walk-forward strategy -- and test it as such -- ov
         return float(model.predict(X_test)[0])
 
     # Figure out all timestamps within the last year
-    with_load_latest_ts = df[~df['24h_later_load'].isna()].index.max() 
-    mask = (df.index <= with_load_latest_ts) & (df.index >= with_load_latest_ts - timedelta(days=365)) 
+    with_load_latest_ts = df[~df['24h_later_load'].isna()].index.max()
+    mask = (df.index <= with_load_latest_ts) & (df.index >= with_load_latest_ts - timedelta(days=365))
     timestamps = df[mask].dropna(subset=('24h_later_load')).index.tolist()
 
     # For each timestamp, train a model and use it to predict the target
@@ -285,7 +285,7 @@ We build it incorporating the walk-forward strategy -- and test it as such -- ov
     y_pred = pd.DataFrame(
         {"predicted_24h_later_load": ts_to_predicted_value.values()},
         index=pd.DatetimeIndex(ts_to_predicted_value.keys()),
-    ) 
+    )
     ```
 
 Quickly, we hit a wall: generating a year's worth of prediction would take >25h.
@@ -295,7 +295,7 @@ Quickly, we hit a wall: generating a year's worth of prediction would take >25h.
   <figcaption>Generating a year's worth of prediction takes more than 25h.</figcaption>
 </figure>
 
-What can we do? Well, one way to address this issue is to subsample the testing timestamps, and use that as a test set. That way, our MAPE over the year will be an _estimate_ of the actual MAPE. 
+What can we do? Well, one way to address this issue is to subsample the testing timestamps, and use that as a test set. That way, our MAPE over the year will be an _estimate_ of the actual MAPE.
 
 ```python
 from random import sample
@@ -314,8 +314,8 @@ To motivate this approach, let's check that this estimate isn't too far off the 
     from random import sample
 
     # Figure out all timestamps within the last year
-    with_load_latest_ts = df[~df['24h_later_load'].isna()].index.max() 
-    mask = (df.index <= with_load_latest_ts) & (df.index >= with_load_latest_ts - timedelta(days=365)) 
+    with_load_latest_ts = df[~df['24h_later_load'].isna()].index.max()
+    mask = (df.index <= with_load_latest_ts) & (df.index >= with_load_latest_ts - timedelta(days=365))
     timestamps = df[mask].dropna(subset=('24h_later_load')).index.tolist()
 
     # Subsample to only train 100 models
@@ -335,7 +335,7 @@ To motivate this approach, let's check that this estimate isn't too far off the 
 
     # Get randomly-ordered timestamps to study the MAPE
     random_timestamps = y_pred.index.tolist()
-    np.random.shuffle(random_timestamps) 
+    np.random.shuffle(random_timestamps)
 
     # Package the y_pred and y_true into a dataframe
     y_true = df.loc[y_pred.index, ['24h_later_load']]
@@ -355,20 +355,20 @@ To motivate this approach, let's check that this estimate isn't too far off the 
 
     # Plot
     fig = px.line(
-        mape_df, x='discarded_proportion', y='estimated_MAPE', 
+        mape_df, x='discarded_proportion', y='estimated_MAPE',
         title='Evolution of the yearly-MAPE <br>when discarding some proportion of the timestamps making up the year',
         labels={'discarded_proportion': 'Proportion of discarded timestamps [%]', 'estimated_MAPE': 'Estimated MAPE [%] over the last year'}
     )
 
     fig.add_hline(y=mape_df.loc[0].estimated_MAPE, line_dash="dot",
-                  annotation_text="Actual MAPE", 
+                  annotation_text="Actual MAPE",
                   annotation_position="bottom right")
     ```
 
 <iframe src="../assets/modelling/mape_degradation_study.html" width="100%" height="400"></iframe>
 
 
-Wonderful! As we hoped, we can get away with only sampling 10% of the data and still having our estimated MAPE be close (within 10%) of the actual MAPE. 
+Wonderful! As we hoped, we can get away with only sampling 10% of the data and still having our estimated MAPE be close (within 10%) of the actual MAPE.
 
 Let's go back to training our LightGBM model, this time judging it on 1% of the data, i.e. 87 samples:
 
@@ -386,7 +386,7 @@ Great, on par with our dummy baseline. Let's do better.
 
 ### Leveraging more timestamps
 
-Currently, the only load-related information our model can use is the 24h-ago-load; how about enrich our data with more timesteps? 
+Currently, the only load-related information our model can use is the 24h-ago-load; how about enrich our data with more timesteps?
 
 ```python
 # Enrich the data w/ more past loads
@@ -412,7 +412,7 @@ Even better! Let's dive deeper and further improve our model.
 
 ### Leveraging time attributes
 
-Currently, our model treats all rows as identical, regardless of whether it's midnight or noon, sunday or wednesday, june or december. 
+Currently, our model treats all rows as identical, regardless of whether it's midnight or noon, sunday or wednesday, june or december.
 There might be relevant predictive power in this information, so let's enrich our data with this sense of "when" we are.
 
 ```python
@@ -472,11 +472,11 @@ df['7d_median'] = df['1h_ago_load'].rolling(window=24*7, min_periods=1).apply(np
 
 </div>
 
-Beautiful! 
+Beautiful!
 
 ## Conclusion
 
-We now have a model performing at a satisfactory standard -- estimated MAPE of 4.11% over the last year. 
+We now have a model performing at a satisfactory standard -- estimated MAPE of 4.11% over the last year.
 We could of course continue improving -- picking our features and hyper-parameters in a more robust and scientific manner[^11], but for now, let's move onto our next challenge: making our solution available to the user.
 
 [^11]: To select hyper-parameters -- and features -- [`optuna`](https://github.com/optuna/optuna) is a great optimization framework. To better understand how the selected features matter to the model, [`SHAP`](https://github.com/shap/shap) is a wonderful model-agnostic framework.

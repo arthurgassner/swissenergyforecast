@@ -1,4 +1,4 @@
-site_name: Swiss Energy Forecast 
+site_name: Swiss Energy Forecast
 site_url: https://swissenergyforecast.com
 repo_name: swissenergyforecast
 repo_url: https://github.com/arthurgassner/swissenergyforecast/
@@ -19,10 +19,10 @@ theme:
     accent: pink     # Accent color
 plugins: [] # disable search
 nav:
-  - Dashboard: index.md    
-  - Motivation: motivation.md                
-  - Problem Understanding: problem_understanding.md                
-  - Data Ingestion: data_ingestion.md                
+  - Dashboard: index.md
+  - Motivation: motivation.md
+  - Problem Understanding: problem_understanding.md
+  - Data Ingestion: data_ingestion.md
   - EDA: eda.md
   - Modelling: modelling.md
   - Industrialization: industrialization.md
@@ -34,9 +34,9 @@ extra:
     provider: google
     property: G-JYGEF8CYXF
   social:
-    - icon: fontawesome/brands/github 
+    - icon: fontawesome/brands/github
       link: https://github.com/arthurgassner
-    - icon: fontawesome/brands/linkedin 
+    - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/in/arthur-gassner/
     - icon: fontawesome/solid/globe
       link: https://arthurgassner.com
@@ -46,7 +46,7 @@ extra:
 extra_css:
   - css/extra-styles.css
   - https://unpkg.com/katex@0/dist/katex.min.css
-  
+
 extra_javascript:
   - https://cdn.plot.ly/plotly-latest.min.js
   - https://unpkg.com/katex@0/dist/katex.min.js

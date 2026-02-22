@@ -1,14 +1,14 @@
 # :fontawesome-solid-industry: Industrialization
 
-## Introduction 
+## Introduction
 
 We now have a working model, performing at an acceptable level. Our goal is to bring it to the user.
 
 Which begs the question: How does our user want to consume our solution?[^1]
 
-[^1]: When we first talked to our user, we sketched out a rough idea of how the solution would be consumed -- and deployed. It is important not to wait till we're at the doors of industrialization to start thinking about deployment options, as they might impact the modelling options available to us. We do _not_ want to end up so far in, only to have to go back to modelling because we realized the user wants to consume their massive model on a low-power chip. 
+[^1]: When we first talked to our user, we sketched out a rough idea of how the solution would be consumed -- and deployed. It is important not to wait till we're at the doors of industrialization to start thinking about deployment options, as they might impact the modelling options available to us. We do _not_ want to end up so far in, only to have to go back to modelling because we realized the user wants to consume their massive model on a low-power chip.
 
-The way the ML model will be consumed educates us on how we should deploy it. 
+The way the ML model will be consumed educates us on how we should deploy it.
 The way we deploy our model will heavily influence how we design our ML system, and hence how we will industrialize[^2] it.
 
 [^2]: Also called _productionalize_.
@@ -45,16 +45,16 @@ Upon receiving the appropriate request through the REST API, the machine will re
 
 ## Production-ready software
 
-Another facet of bringing an ML solution to a user is that we now need to have confidence that our code is maintainable, shareable, and reproducible. 
+Another facet of bringing an ML solution to a user is that we now need to have confidence that our code is maintainable, shareable, and reproducible.
 
 - **Maintainability**:
     - Do I have any confidence that my code works as intended?
-    - In two months, can I easily come back to it? 
+    - In two months, can I easily come back to it?
     - If I change some code, how do I know it is still working as intended?
-- **Shareability**: 
+- **Shareability**:
     - Let's say I way to share it to our user; how can I do that?
     - A friend wants to help me out; how can they do that?
-- **Reproducibility**: 
+- **Reproducibility**:
     - Am I confident that I can easily reproduce the results outlined previously?
 
 All three issues are interlinked.
@@ -75,7 +75,7 @@ I recommend using them as early as possible, in any project.<br>
 An upside of using GitHub[^5] is their [GitHub Actions](https://github.com/features/actions), allowing us to automate part of our workflow, and further improve the shareability of our code.
 
 !!! tip "Version control your code"
-    Version control your code to keep track of its evolution.    
+    Version control your code to keep track of its evolution.
 
 [^5]: Most `git` hosting solutions have an equivalent.
 
@@ -136,11 +136,11 @@ To compartimentalize all the Python packages used in a given project, use a **vi
 !!! tip "Use a virtual environment"
     I use [`uv`](https://docs.astral.sh/uv/) to manage them, but others exist.
 
-    `uv` will create a `.venv` folder, which will contain all the packages installed in the virtual environment. 
+    `uv` will create a `.venv` folder, which will contain all the packages installed in the virtual environment.
 
 ### From notebooks to `.py`
 
-Jupyter notebooks (`.ipynb`) -- while great for experimentation -- are hard to test and run non-interactively. 
+Jupyter notebooks (`.ipynb`) -- while great for experimentation -- are hard to test and run non-interactively.
 Hence, we move away from them, and start implementing our ML pipeline in `.py`.
 
 #### Use `requirements.txt` (or even better, `pyproject.toml`)
@@ -184,20 +184,20 @@ dev = [
 ]
 ```
 
-#### Log properly 
+#### Log properly
 
 While developping, an over-reliance on `print` statements is acceptable, as current-us will likely be the only consumer of these "logs".
 
 As we move onto industrialisation, a proper logging setup eases future pain, and helps ensuring the system is running as we'd expect.
 
-Logging libraries distinct themselves from simple `print` statements thanks to their 
+Logging libraries distinct themselves from simple `print` statements thanks to their
 
-- **Log level support**, allowing us to distinguish between -- e.g. -- mere good-to-know logs (`INFO`), watch-out-something-wrong-happened logs (`WARNING`) and failures (`ERROR`). 
+- **Log level support**, allowing us to distinguish between -- e.g. -- mere good-to-know logs (`INFO`), watch-out-something-wrong-happened logs (`WARNING`) and failures (`ERROR`).
 These levels help us read through the logs, as well as parse them were something to go wrong.
 
 - **Formatting** utilities, allowing us to color and/or format (e.g. specifying the file logging, or the timestamp).
 
-- **Multiple sinks**, allowing us to output our logs to several locations, e.g. the shell and some `logs/` folder, for safe-keeping.  
+- **Multiple sinks**, allowing us to output our logs to several locations, e.g. the shell and some `logs/` folder, for safe-keeping.
 
 !!! tip "Log diligently"
     Many logging libraries help you get the job done. I find `loguru` easier to use, with less boilerplate and neat shell coloring.
@@ -228,7 +228,7 @@ Below are a few non-exhaustive list of guidelines I follow to write clean and re
 
     !!! tip "Code formatters"
         Consistency improves readability.
-        
+
         Code formatters automatically formats the code to follow some guidelines. <br>
         I like and use [`black`](https://github.com/psf/black) to format my code, and [`isort`](https://pycqa.github.io/isort/) to sort my imports.
 
@@ -241,4 +241,4 @@ That's were tests come in. To test python code, [`pytest`](https://docs.pytest.o
 
 ## Conclusion
 
-We now have a maintainable end-to-end solution. We can move onto deploying to our user, so that they can start using it. 
+We now have a maintainable end-to-end solution. We can move onto deploying to our user, so that they can start using it.

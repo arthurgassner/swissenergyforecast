@@ -11,14 +11,14 @@ And here we are! An end-to-end ML solution, that our user can actually benefit f
 
 We're nearing the end of our journey. As expected, the steps towards a deployed model were as follows:
 
-1. **Problem understanding**: What problem are we trying to solve? In what context? 
+1. **Problem understanding**: What problem are we trying to solve? In what context?
 2. **Data ingestion**: What data can we access to solve this problem? How?
 3. **Exploratory Data Analysis (EDA)**: What does that data look like?
 4. **Modelling**: How can we use that data to solve our problem?
 5. **Industrialization**: How can we prepare our solution for it to be used by other people?
-6. **Deployment**: How can the people having the initial problem use our solution? 
+6. **Deployment**: How can the people having the initial problem use our solution?
 
-> Naturally, the work doesn't end here. We'll hear back from our user, and -- potentially -- address their comments by making changes to our pipeline. 
+> Naturally, the work doesn't end here. We'll hear back from our user, and -- potentially -- address their comments by making changes to our pipeline.
 
 Congratulations to us on building -- and most importantly shipping -- our ML solution! 🎆🥳
 
@@ -42,9 +42,9 @@ Regardless, an **unused ML solution is a failed ML solution**. As such, we must 
 A trick we can use to prevent us from premature optimization is to gather our improvement ideas somewhere, so that we know when to look **_if_** these improvements end up making sense. This section is this project's somewhere.
 
 
-### Data ingestion 
+### Data ingestion
 
-- We only considered the `ENTSO-E` data and noticed their reported `Actual Load` gets updated within 1-2 weeks. How about leveraging other energy data sources? 
+- We only considered the `ENTSO-E` data and noticed their reported `Actual Load` gets updated within 1-2 weeks. How about leveraging other energy data sources?
 - We predicted future energy data from past energy data. The weather is likely a strong predictor of energy consumptino. How about enriching our model with weather data -- e.g. from MeteoSuisse?
 
 ### Modelling

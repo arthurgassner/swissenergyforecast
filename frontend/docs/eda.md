@@ -1,6 +1,6 @@
 # :fontawesome-solid-vial: Exploratory Data Analysis (EDA)
 
-## Introduction 
+## Introduction
 
 Now that we have access to our data source, let's explore it.
 We must ensure we have a good understanding of what the data is -- and isn't -- before we can move onto modelling options.
@@ -34,8 +34,8 @@ Let's now plot it.
 import plotly.express as px
 
 fig = px.line(
-    df, x=df.index, y='Actual Load', 
-    markers=True, 
+    df, x=df.index, y='Actual Load',
+    markers=True,
     title='Lineplot of all the available Actual Load',
     labels={'index': 'Date', 'Actual Load': 'Actual Load [MW]'}
 )
@@ -72,7 +72,7 @@ fig = px.scatter(
 
 They do send us empty data, namely:
 
-- The actual load is empty between now and tomorrow evening. This makes sense, because these are future datetimes for which we have a forecasted load. 
+- The actual load is empty between now and tomorrow evening. This makes sense, because these are future datetimes for which we have a forecasted load.
 - The forecasted loads is empty for 24h straight on the 24.11.2014. Looking at the full data, this corresponds to a streak of _missing_ actual loads in 2024.
 - The forecasted loads is empty for 24h straight on the 31.08.2015. Likely some kind of maintenance happened on that day on the ENTSO-E's side.
 
@@ -80,7 +80,7 @@ They do send us empty data, namely:
 
 How about missing data[^2]? Do we have all the rows between the first datetime and the last? Let's check.
 
-[^2]: By _missing_, I mean that the ENTSO-E did _not_ send data corresponding to some specific hours. 
+[^2]: By _missing_, I mean that the ENTSO-E did _not_ send data corresponding to some specific hours.
 
 ```python
 import plotly.express as px
@@ -134,7 +134,7 @@ df['APE'] = df.apply(
     axis=1
 )
 fig = px.scatter(
-    df, x=df.index, y='APE', 
+    df, x=df.index, y='APE',
     title='Scatterplot of the Absolute Percentage Error (APE) of the official ENTSO-E forecast',
     labels={'index': 'Date', 'Actual Load': 'Actual Load [MW]'}
 )
@@ -156,7 +156,7 @@ from datetime import timedelta
 import plotly.express as px
 
 # Figure out the latest timestamp with a load
-with_load_latest_ts = df[~df['Actual Load'].isna()].index.max() 
+with_load_latest_ts = df[~df['Actual Load'].isna()].index.max()
 
 # Compute the MAPE over different timespans
 delta_h_to_mape = {}
@@ -170,7 +170,7 @@ mape_df = pd.DataFrame({
 })
 
 fig = px.scatter(
-    mape_df, x='delta_time', y='MAPE', 
+    mape_df, x='delta_time', y='MAPE',
     title='Scatterplot of the ENTSO-E forecast\'s Mean Absolute Percentage Error (MAPE), <br>over different timespans',
     labels={'delta_time': 'Timespan', 'MAPE': 'MAPE [%]'}
 )
@@ -180,7 +180,7 @@ fig = px.scatter(
 
 As we can see, the MAPE is excellent (~3%) over the last 1-2 days, and then more than doubles if we look at at the full week, month, and year.[^3]
 
-[^3]: I later found out that the `Actual Load` -- as communicated by the ENTSO-E -- gets updated -- likely to be closer to reality -- within roughly a week of the first publication. 
+[^3]: I later found out that the `Actual Load` -- as communicated by the ENTSO-E -- gets updated -- likely to be closer to reality -- within roughly a week of the first publication.
 
 ## Conclusion
 

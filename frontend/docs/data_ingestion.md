@@ -32,8 +32,8 @@ import pandas as pd
 entsoe_client = EntsoePandasClient(api_key="<ENTSOE_API_KEY_HERE>")
 
 df = entsoe_client.query_load_and_forecast(
-    country_code="CH", 
-    start=pd.Timestamp('2024-01-01 00:00', tz="Europe/Zurich"), 
+    country_code="CH",
+    start=pd.Timestamp('2024-01-01 00:00', tz="Europe/Zurich"),
     end=pd.Timestamp('2024-01-02 00:00', tz="Europe/Zurich"),
 )
 df.head(5)

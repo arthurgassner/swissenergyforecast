@@ -17,12 +17,12 @@ Eventually, I stumbled upon the [Swiss Energy Dashboard](https://energiedashboar
 
 Most ML projects can be roughly broken down into sequential stages:
 
-1. **Problem understanding**: What problem are we trying to solve? In what context? 
+1. **Problem understanding**: What problem are we trying to solve? In what context?
 2. **Data ingestion**: What data can we access to solve this problem? How?
 3. **Exploratory Data Analysis (EDA)**: What does that data look like?
 4. **Modelling**: How can we use that data to solve our problem?
 5. **Industrialization**: How can we prepare our solution for it to be used by other people?
-6. **Deployment**: How can the people having the initial problem use our solution? 
+6. **Deployment**: How can the people having the initial problem use our solution?
 
 We will proceed stage by stage, but _very often_ go back to previous stages, due to the **iterative nature of ML engineering**.[^1]
 

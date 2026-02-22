@@ -15,7 +15,7 @@ Back to the big picture of our ML solution, we need our code to run on a remote 
   <figcaption>Big picture of our ML solution's system design.</figcaption>
 </figure>
 
-So how about renting someone else's computer, hosting our code there -- now that it's shareable -- and giving our user access to that computer? 
+So how about renting someone else's computer, hosting our code there -- now that it's shareable -- and giving our user access to that computer?
 
 That's where cloud computing comes in.
 
@@ -32,7 +32,7 @@ The internet is ripe with low-cost VPS offers. I went with Infomaniak -- a Swiss
   <figcaption>A side-project-dedicated machine for 3CHF/month.</figcaption>
 </figure>
 
-Through the VPS-provider's website, we order an `Ubuntu 22.04.5 LTS` and -- after a few minutes of waiting -- our machine is ready. 
+Through the VPS-provider's website, we order an `Ubuntu 22.04.5 LTS` and -- after a few minutes of waiting -- our machine is ready.
 
 ## Accessing the VPS
 
@@ -73,16 +73,16 @@ To make it more comfortable to work on our VPS, we can set it up with our favour
     On my end, my setting-up-the-vps flow looks like
 
     ```bash
-    sudo apt install && sudo apt upgrade # Upgrade the installed-by-default software 
+    sudo apt install && sudo apt upgrade # Upgrade the installed-by-default software
     sudo reboot
 
-    # Install oh-my-zsh 
+    # Install oh-my-zsh
     sudo apt install zsh
     sudo chsh -s $(which zsh)
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
     # Install fzf
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf 
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     ~/.fzf/install
     # Then, manuall add the below lines to ~/.zshrc to fix some fzf-related bug
     # export LC_CTYPE=en_US.UTF-8
@@ -108,12 +108,12 @@ They can grant our VPS a limited access -- read-only to a single repository -- a
 
 !!! note "GitHub deploy keys"
     A deploy key is a public SSH key that was uploaded on GitHub, granting the owner of the matching private key with access to a single repository.
-    
+
     That access can be read-only, or read-and-write.
 
 !!! note "Generating a dedicating public/private SSH key pair"
     As not to use the same SSH key pair for everything, we generate a public/private SSH key pair dedicated to authentifying us to GitHub.
-    
+
     The steps are outlined in the [`ssh-keygen` procedure](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#generating-a-new-ssh-key).
 
 <figure markdown="span">
@@ -125,7 +125,7 @@ They can grant our VPS a limited access -- read-only to a single repository -- a
 
 How can we package our software to ensure it'll run on our VPS, since the VPS' environment will differ from our development environment -- i.e. my private computer?
 
-**Containerization** addresses this issue, with tools such as [docker](https://www.docker.com/). 
+**Containerization** addresses this issue, with tools such as [docker](https://www.docker.com/).
 
 <figure markdown="span">
   ![Image title](assets/deployment/docker-logo-white.svg){ width="100%" }
@@ -142,9 +142,9 @@ We rely on [volumes](https://docs.docker.com/engine/storage/volumes/) to have da
   <figcaption>Our VPS, running our containerized ML solution.</figcaption>
 </figure>
 
-??? note "Use `docker compose`" 
+??? note "Use `docker compose`"
     Since we only have a single container, one way to make it run would be to use following command
-    
+
     ```bash
     docker run --env-file ~/swissenergy-backend/.env --name swissenergy-backend -p 8080:80 -v swissenergy-backend-data:/code/data swissenergy-backend-image
     ```
@@ -193,8 +193,8 @@ Our containerized ML solution is running on our VPS, and publishing locally on t
 
 [^2]: Which means we can access our solution's routes from within our VPS, via `localhost:8080/SOME_ROUTE`.
 
-Someone outside of our VPS cannot access these routes. 
-A **reverse proxy** addresses this problem by acting as an interface between the outside -- the internet -- and the inside. 
+Someone outside of our VPS cannot access these routes.
+A **reverse proxy** addresses this problem by acting as an interface between the outside -- the internet -- and the inside.
 
 <figure markdown="span">
   ![Image title](assets/deployment/reverse_proxy.png){ width="100%" }
@@ -214,7 +214,7 @@ To be able to reach our ML solution from the outside, we need to:
   ```json title="/etc/caddy/Caddyfile"
   {
     # Disable automatic HTTPS
-    auto_https off 
+    auto_https off
   }
 
   # Route HTTP traffic to our ML backend
@@ -300,11 +300,11 @@ To run a command at the 15th minute of every hour, simply:
   15 * * * * curl -X 'GET' 'http://localhost:8080/forecasts/update'
   ```
 
-And _voilà_! Cron will run in our VPS' background, and send our GET request to the our ML backend's `/forecasts/update` route on the 15th minutes of each hour. 
+And _voilà_! Cron will run in our VPS' background, and send our GET request to the our ML backend's `/forecasts/update` route on the 15th minutes of each hour.
 
 ??? note "Only exposing necessary routes through `caddy`."
     Since `cron` will handle the forecast update from the inside of the VPS, there is no need for us to expose `/forecasts/update` to the outside.
-    We can explicitely whitelist certain routes through our `Caddyfile`: 
+    We can explicitely whitelist certain routes through our `Caddyfile`:
 
     ```json title="/etc/caddy/Caddyfile" hl_lines="9-25"
     # Redirect HTTP requests to HTTPS

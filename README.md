@@ -3,7 +3,7 @@
 
 ### Install
 
-- Install `uv` 
+- Install `uv`
 - Run `uv sync --project backend --dev` TODO
 - Run `uv run pre-commit install` TODO
 
@@ -15,7 +15,7 @@ To run locally environment, run `docker compose up --watch --build`.
 > This will run both the frontend and backend.
 > The backend will auto-reload/rebuild on any code changes (see `compose.override.yaml` for details)
 
-### Test 
+### Test
 
 To run the tests, run `uv run pytest`.
 

@@ -15,7 +15,7 @@ function createBarTraces(mapeData) {
         if (duration === '4w') return '1 month';
         return duration;
     }); // ['1h', '24h', '1 week', '1 month']
-    
+
     const mapeEntsoe = Object.values(mapeData.entsoe_model);    // Corresponding MAPE values
 
     const durationsOurModel = Object.keys(mapeData.our_model).map(duration => {
@@ -23,7 +23,7 @@ function createBarTraces(mapeData) {
         if (duration === '4w') return '1 month';
         return duration;
     });  // ['1h', '24h', '1 week', '1 month']
-    
+
     const mapeOurModel = Object.values(mapeData.our_model);     // Corresponding MAPE values
 
     // Calculate error bars for Our Model

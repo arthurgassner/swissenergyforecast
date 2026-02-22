@@ -11,7 +11,7 @@ title: Swiss Energy Forecast | An end-to-end machine learning project
 <script src='javascripts/last_updated.js'></script>
 <script src="javascripts/consumption_lineplot.js"></script>
 
-## Forecast Performance 
+## Forecast Performance
 <div id="plotly-bar-chart"></div>
 
 <script src="javascripts/mape_barplot.js"></script>
