@@ -1,10 +1,7 @@
-from pathlib import Path
-
 import joblib
 import pandas as pd
 from app.core.config import Settings
-from app.schemas.forecast import MAPE, Forecast
-from loguru import logger
+from app.schemas.forecast import Forecast
 
 
 class DBCLient:

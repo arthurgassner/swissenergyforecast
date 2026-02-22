@@ -1,15 +1,12 @@
 from datetime import timedelta
 
-import pandas as pd
 from app.clients.db_client import DBCLient
-from app.core.config import get_settings
 from app.core.dependencies import get_db_client
 from app.schemas.entsoe_loads import (
     ENTSOELoads,
 )
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from fastapi.responses import ORJSONResponse
-from loguru import logger
 
 router = APIRouter()
 

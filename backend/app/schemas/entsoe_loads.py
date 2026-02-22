@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import pandas as pd
 from loguru import logger
 from pydantic import BaseModel, model_validator
 

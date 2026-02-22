@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from typing import Any, Type
 
 import pandas as pd
 from human_readable import precise_delta

@@ -1,6 +1,5 @@
 """Service responsible for extracted features out of the cleaned data."""
 
-from pathlib import Path
 from typing import Callable
 
 import numpy as np

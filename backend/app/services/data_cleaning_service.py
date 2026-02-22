@@ -1,8 +1,5 @@
 """Service responsible for cleaning the data downloaded from the ENTSO-E servers."""
 
-from pathlib import Path
-
-import numpy as np
 import pandas as pd
 from loguru import logger
 
