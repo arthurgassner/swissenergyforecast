@@ -61,3 +61,32 @@ def test__query_load_and_forecast__future_ts(entsoe_client: ENTSOEClient):
     assert all(c1 == c2 for c1, c2 in zip(expected_df.columns, fetched_df.columns))  # same column names
     assert (expected_df.dtypes == fetched_df.dtypes).all()  # same dtypes
     assert (expected_df.index == fetched_df.index).all()  # same index
+
+def test__query_load_and_forecast__24h_ago_ts(entsoe_client: ENTSOEClient):
+    """Querying the ENTSO-E API with a timestamp 24h ago."""
+
+    # given
+    now_ts = pd.Timestamp(datetime.now(), tz="Europe/Zurich")
+
+    # when
+    fetched_df = entsoe_client._query_load_and_forecast(start_ts=now_ts - timedelta(hours=24), end_ts=now_ts)
+
+    # then
+
+    # data
+    assert len(fetched_df.columns) == 2  # 2 columns
+    assert fetched_df.columns[0] == "Forecasted Load" and fetched_df.columns[1] == "Actual Load"
+    # data is hourly, so we should not have more than 49 -- 49 if hour change happened in the last 48h -- datapoints
+    assert len(fetched_df) <= 49
+    # all datapoints after now should be NaN
+    mask = fetched_df.index > now_ts
+    assert fetched_df.loc[mask, "Actual Load"].isna().all()
+
+    # index
+    assert isinstance(fetched_df.index, pd.DatetimeIndex)
+    assert fetched_df.index.is_monotonic_increasing
+    assert fetched_df.index.is_unique
+
+    # dtypes
+    assert (fetched_df.dtypes == "float64").all()  # correct dtype
+    assert fetched_df.index.dtype == "datetime64[us, Europe/Zurich]"  # correct timezone

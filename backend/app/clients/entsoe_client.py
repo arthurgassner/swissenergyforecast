@@ -82,7 +82,7 @@ class ENTSOEClient:
 
     
     @retry(retry=retry_if_exception_type(requests.ConnectionError), stop=stop_after_attempt(10), wait=wait_fixed(5))
-    def _query_load_and_forecast(self, start_ts: pd.Timestamp, end_ts: pd.Timestamp | None = None) -> pd.DataFrame:
+    def _query_load_and_forecast(self, start_ts: pd.Timestamp, end_ts: pd.Timestamp) -> pd.DataFrame:
         """Query the ENTSO-E API for the load and forecast data from `start_ts` to `end_ts`."""
 
         human_delta_str = precise_delta(end_ts - start_ts, minimum_unit="seconds")
