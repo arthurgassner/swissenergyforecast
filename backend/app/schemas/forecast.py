@@ -92,7 +92,6 @@ class MAPE(BaseModel):
         """
 
         # Check the input is as we expect
-        y = pd.concat([y, y], axis=0)
         MAPE._raise_if_unexpected_format(y)
         MAPE._raise_if_unexpected_format(yhat)
         assert len(y) == len(yhat)
