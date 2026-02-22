@@ -39,7 +39,7 @@
 
     const officialForecastTrace = {
       x: entsoeForecastData.timestamps.map(t => new Date(new Date(t).getTime() + oneDayInMilliseconds)),
-      y: entsoeForecastData['day_later_predicted_load'],
+      y: entsoeForecastData['day_later_predicted_loads'],
       mode: 'lines',
       type: 'scatter',
       name: 'ENTSO-E\'s previous-day forecasted load [MW]',
@@ -48,7 +48,7 @@
 
     const ourForecastTrace = {
       x: forecastData.timestamps.map(t => new Date(new Date(t).getTime() + oneDayInMilliseconds)),
-      y: forecastData.day_later_predicted_load.map(y => Math.round(y)),
+      y: forecastData.day_later_predicted_loads.map(y => Math.round(y)),
       mode: 'lines',
       type: 'scatter',
       name: 'Our previous-day forecasted load [MW]'
