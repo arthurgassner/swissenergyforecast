@@ -1,10 +1,11 @@
 import joblib
 import pandas as pd
 from app.core.config import Settings
+from app.schemas.forecast import MAPE
 from app.schemas.forecast import Forecast
 
 
-class DBCLient:
+class DBClient:
     """Dummy DBClient, to prepare for porting the codebase to a proper DB."""
 
     # TODO move to psql
@@ -14,12 +15,14 @@ class DBCLient:
         self._silver_filepath = settings.SILVER_DF_FILEPATH
         self._gold_filepath = settings.GOLD_DF_FILEPATH
         self._latest_forecast_filepath = settings.LATEST_FORECAST_FILEPATH
+        self._latest_mapes_filepath = settings.LATEST_MAPES_FILEPATH
 
         # Ensure the filepaths can be reached
         self._bronze_filepath.parent.mkdir(parents=True, exist_ok=True)
         self._silver_filepath.parent.mkdir(parents=True, exist_ok=True)
         self._gold_filepath.parent.mkdir(parents=True, exist_ok=True)
         self._latest_forecast_filepath.parent.mkdir(parents=True, exist_ok=True)
+        self._latest_mapes_filepath.parent.mkdir(parents=True, exist_ok=True)
 
     async def save_bronze(self, df: pd.DataFrame) -> None:
         """Dump df to the bronze filepath."""
@@ -36,6 +39,10 @@ class DBCLient:
     async def save_latest_forecast(self, forecast: Forecast) -> None:
         """Dump forecast to the latest forecast's filepath."""
         joblib.dump(forecast, self._latest_forecast_filepath)
+
+    async def save_latest_mapes(self, mapes: list[MAPE]) -> None:
+        """Dump MAPEs to the latest mapes' filepath."""
+        joblib.dump(mapes, self._latest_mapes_filepath)
 
     async def load_bronze(self) -> pd.DataFrame | None:
         """Load df from the bronze filepath."""
@@ -63,3 +70,9 @@ class DBCLient:
             return None
 
         return joblib.load(self._latest_forecast_filepath)
+
+    async def fetch_latest_mapes(self) -> list[MAPE] | None:
+        if not self._latest_mapes_filepath.is_file():
+            return None
+
+        return joblib.load(self._latest_mapes_filepath)

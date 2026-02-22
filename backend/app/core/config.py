@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     SILVER_DF_FILEPATH: Path = DATA_FOLDERPATH / "silver" / "df.pickle"
     GOLD_DF_FILEPATH: Path = DATA_FOLDERPATH / "gold" / "df.pickle"
     LATEST_FORECAST_FILEPATH: Path = DATA_FOLDERPATH / "latest_forecast.joblib"
+    LATEST_MAPES_FILEPATH: Path = DATA_FOLDERPATH / "latest_mapes.joblib"
     LOGS_FILEPATH: Path = DATA_FOLDERPATH / "logs" / ".log"
     ENTSOE_API_KEY: str
     MODEL_N_ESTIMATORS: int

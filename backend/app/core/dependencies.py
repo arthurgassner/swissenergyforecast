@@ -1,4 +1,4 @@
-from app.clients.db_client import DBCLient
+from app.clients.db_client import DBClient
 from app.clients.entsoe_client import ENTSOEClient
 from app.core.config import Settings
 from app.core.config import get_settings
@@ -17,4 +17,4 @@ async def get_entsoe_client(
 
 
 async def get_db_client(settings: Settings = Depends(get_settings)) -> ENTSOEClient:
-    return DBCLient(settings=settings)
+    return DBClient(settings=settings)

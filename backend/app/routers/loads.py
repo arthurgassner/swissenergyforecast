@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from app.clients.db_client import DBCLient
+from app.clients.db_client import DBClient
 from app.core.dependencies import get_db_client
 from app.schemas.entsoe_loads import ENTSOELoads
 from fastapi import APIRouter
@@ -18,7 +18,7 @@ router = APIRouter()
 async def get_loads(
     days: int = Query(0, ge=0, description="How many days to look back"),
     hours: int = Query(0, ge=0, description="How many hours to look back"),
-    db_client: DBCLient = Depends(get_db_client),
+    db_client: DBClient = Depends(get_db_client),
 ) -> ENTSOELoads:
 
     # Load past loads
