@@ -17,27 +17,6 @@ from app.services import (
 
 router = APIRouter()
 
-@router.get("/forecasts/fetch/latest/predictions")
-async def get_forecasts_fetch_latest_predictions():
-    # Load latest forecast
-    timestamps, predicted_24h_later_load = [], []
-    if get_settings().YHAT_FILEPATH.is_file():
-        yhat = pd.read_pickle(get_settings().YHAT_FILEPATH)
-        timestamps = yhat.index.tolist()
-        predicted_24h_later_load = yhat["predicted_24h_later_load"].fillna("NaN").tolist()
-
-    latest_forecasts = {
-        "timestamps": timestamps,
-        "predicted_24h_later_load": predicted_24h_later_load,
-    }
-
-    logger.info(
-        f"Ready to send back: {len(latest_forecasts['timestamps'])} timestamps [{min(latest_forecasts['timestamps'])} -> {max(latest_forecasts['timestamps'])}]"
-    )
-
-    return latest_forecasts
-
-
 @router.get("/forecasts/fetch/latest/ts")
 async def get_fetch_latest_forecast_ts():
     if not get_settings().YHAT_FILEPATH.is_file():
