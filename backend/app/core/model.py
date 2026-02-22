@@ -22,15 +22,15 @@ class Model:
 
     @staticmethod
     def get_hourly_timestamps(start: pd.Timestamp, end: pd.Timestamp, n_sample: int | None = None) -> list[pd.Timestamp]:
-        """Get hourly timestamps within (start, end) including, 
+        """Get hourly timestamps within (start, end) including,
         randomly-sampling it (without replacement) if n_sample is provided.
         """
-        all_hourly_timestamps = pd.date_range(start=start, end=end, freq='h').to_list()
+        all_hourly_timestamps = pd.date_range(start=start, end=end, freq="h").to_list()
         if n_sample is None:
             return all_hourly_timestamps
 
         return sample(all_hourly_timestamps, n_sample)
-    
+
     def _train_predict(self, Xy: pd.DataFrame, query_ts: pd.Timestamp) -> float:
         """Train a model on all the features whose index is BEFORE query_ts,
         and run an inference on the features EXACTLY AT query_ts.
@@ -79,7 +79,9 @@ class Model:
             pd.DataFrame: Dataframe with the predicted values under the column 'predicted_24h_later_load'.
                           The index corresponds to the query_timestamps.
         """
-        logger.info(f"Training {len(query_timestamps)} models, for timestamps within {min(query_timestamps)} -> {max(query_timestamps)}")
+        logger.info(
+            f"Training {len(query_timestamps)} models, for timestamps within {min(query_timestamps)} -> {max(query_timestamps)}"
+        )
 
         predicted_values = []
         for query_ts in tqdm(query_timestamps):

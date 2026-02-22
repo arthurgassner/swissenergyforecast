@@ -48,6 +48,7 @@ def _rolling_window(df: pd.DataFrame, n_hours: int, stat: Callable) -> pd.Series
     last_hour_loads = _n_hours_ago_load(df, n_hours=1)
     return last_hour_loads.rolling(window=n_hours, min_periods=1).apply(stat)
 
+
 def enrich(df: pd.DataFrame) -> pd.DataFrame:
     """Enrich the df with the extracted features.
 

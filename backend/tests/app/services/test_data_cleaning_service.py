@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import pytest
-
 from app.services import data_cleaning_service
 
 

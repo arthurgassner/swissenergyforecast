@@ -1,15 +1,15 @@
 from pathlib import Path
 
 import joblib
-from loguru import logger
 import pandas as pd
-
 from app.core.config import Settings
 from app.schemas.forecast import MAPE, Forecast
+from loguru import logger
 
 
 class DBCLient:
     """Dummy DBClient, to prepare for porting the codebase to a proper DB."""
+
     # TODO move to psql
 
     def __init__(self, settings: Settings) -> None:
@@ -44,25 +44,25 @@ class DBCLient:
         """Load df from the bronze filepath."""
         if not self._bronze_filepath.is_file():
             return None
-        
+
         return pd.read_pickle(self._bronze_filepath)
 
     async def load_silver(self) -> pd.DataFrame | None:
         """Load df from the silver filepath."""
         if not self._silver_filepath.is_file():
             return None
-        
+
         return pd.read_pickle(self._silver_filepath)
 
     async def load_gold(self) -> pd.DataFrame | None:
         """Load df from the gold filepath."""
         if not self._gold_filepath.is_file():
             return None
-        
+
         return pd.read_pickle(self._gold_filepath)
-    
+
     async def fetch_latest_forecast(self) -> Forecast | None:
         if not self._latest_forecast_filepath.is_file():
             return None
-        
+
         return joblib.load(self._latest_forecast_filepath)

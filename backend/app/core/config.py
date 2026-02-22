@@ -12,10 +12,11 @@ class Settings(BaseSettings):
     GOLD_DF_FILEPATH: Path = DATA_FOLDERPATH / "gold" / "df.pickle"
     LATEST_FORECAST_FILEPATH: Path = DATA_FOLDERPATH / "latest_forecast.joblib"
     LOGS_FILEPATH: Path = DATA_FOLDERPATH / "logs" / ".log"
-    ENTSOE_API_KEY: str 
+    ENTSOE_API_KEY: str
     MODEL_N_ESTIMATORS: int
     MAX_CONCURRENT_REQUESTS: int = 10
 
+
 @lru_cache
 def get_settings() -> Settings:
-    return Settings(_env_file='.env.override')
+    return Settings(_env_file=".env.override")

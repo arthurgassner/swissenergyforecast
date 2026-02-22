@@ -1,13 +1,12 @@
 import sys
 import time
 
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from loguru import logger
-
 from app.core.config import get_settings
 from app.routers.entsoe_loads import router as entsoe_loads_router
 from app.routers.forecast import router as forecast_router
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 
 logger.remove()
 logger.add(sys.stderr, colorize=True)  # Force colorization, as Docker strips them otherwise
@@ -22,16 +21,16 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, 
 @app.middleware("http")
 async def middleware(request: Request, call_next):
     start_time_s = time.perf_counter()
-    
+
     logger.info(f"Received {request.method} on {request.url} from {request.client.host}:{request.client.port}")
-    
+
     response = await call_next(request)
-    
+
     elapsed_time_s = time.perf_counter() - start_time_s
     logger.info(f"Finished {request.method} {request.url} in {elapsed_time_s * 1e3:.0f}ms")
-    
+
     response.headers["X-Process-Time"] = str(elapsed_time_s)
-    
+
     return response
 
 

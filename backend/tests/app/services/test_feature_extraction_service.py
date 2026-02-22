@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-
 from app.services import feature_extraction_service
 
 

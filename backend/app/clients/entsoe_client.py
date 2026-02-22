@@ -1,16 +1,21 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 
+import pandas as pd
+import requests
+from app.core.config import Settings
 from entsoe.entsoe import EntsoePandasClient
 from entsoe.exceptions import NoMatchingDataError
 from human_readable import precise_delta
 from loguru import logger
-import pandas as pd
-import requests
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential, wait_fixed
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import asyncio
-
-from app.core.config import Settings
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+    wait_fixed,
+)
 
 
 class ENTSOEClient:
@@ -30,12 +35,12 @@ class ENTSOEClient:
         Returns:
             list[tuple[pd.Timestamp, pd.Timestamp]]: Ordered list of yearly intervals.
         """
-        
+
         if start_ts > end_ts:
             error_str = f"start_ts ({start_ts}) must be <= end_ts ({end_ts})"
             logger.error(error_str)
             raise ValueError(error_str)
-        
+
         start_end_timestamps = []
         curr_start_ts = start_ts
         curr_end_ts = min(end_ts, curr_start_ts + timedelta(days=365))
@@ -45,13 +50,13 @@ class ENTSOEClient:
             curr_end_ts = min(end_ts, curr_start_ts + timedelta(days=365))
         start_end_timestamps.append((curr_start_ts, end_ts))
         return start_end_timestamps
-    
+
     @staticmethod
     def _raise_if_unexpected_format(df: pd.DataFrame) -> None:
         """Raise ValueError if df is formatted differently than expected from the ENTSO-E API, i.e. a pd.DataFrame with
-            - columns: ('Forcasted Load', 'Actual Load')
-            - dtypes: float64
-            - index: DateTimeIndex with dtype datetime64[us, Europe/Zurich]
+        - columns: ('Forcasted Load', 'Actual Load')
+        - dtypes: float64
+        - index: DateTimeIndex with dtype datetime64[us, Europe/Zurich]
         """
         # Ensure df is actually a dataframe
         if type(df) is not pd.DataFrame:
@@ -60,19 +65,19 @@ class ENTSOEClient:
             raise ValueError(error_str)
 
         # Ensure columns are as expected
-        expected_columns = ('Forecasted Load', 'Actual Load')
+        expected_columns = ("Forecasted Load", "Actual Load")
         if len(df.columns) != 2 or any(expected_columns != df.columns):
             error_str = f"ENSTO-E-sourced pd.DataFrame's columns should be: {expected_columns} but were: {df.columns}"
             logger.error(error_str)
             raise ValueError(error_str)
-        
+
         # Ensure dtypes are as expected
-        expected_dtype = 'float64'
+        expected_dtype = "float64"
         if any(df.dtypes != expected_dtype):
             error_str = f"ENSTO-E-sourced pd.DataFrame's dtypes should all be {expected_dtype} but were: {df.dtypes}"
             logger.error(error_str)
             raise ValueError(error_str)
-        
+
         # Ensure index is as expected
         excepted_index_dtype = "datetime64[us, Europe/Zurich]"
         if type(df.index) is not pd.DatetimeIndex or df.index.dtype != excepted_index_dtype:
@@ -80,7 +85,6 @@ class ENTSOEClient:
             logger.error(error_str)
             raise ValueError(error_str)
 
-    
     @retry(retry=retry_if_exception_type(requests.ConnectionError), stop=stop_after_attempt(10), wait=wait_fixed(5))
     def _query_load_and_forecast(self, start_ts: pd.Timestamp, end_ts: pd.Timestamp) -> pd.DataFrame:
         """Query the ENTSO-E API for the load and forecast data from `start_ts` to `end_ts`."""
@@ -89,21 +93,27 @@ class ENTSOEClient:
         logger.info(f"Asking the ENTSO-E API for load/forecast data between {start_ts} -> {end_ts} ({human_delta_str})")
 
         try:
-            load_and_forecast_df = self._entsoe_pandas_client.query_load_and_forecast(country_code="CH", start=start_ts, end=end_ts)
+            load_and_forecast_df = self._entsoe_pandas_client.query_load_and_forecast(
+                country_code="CH", start=start_ts, end=end_ts
+            )
             ENTSOEClient._raise_if_unexpected_format(load_and_forecast_df)
-        
-        except NoMatchingDataError: # No data found for the requested time span
+
+        except NoMatchingDataError:  # No data found for the requested time span
             logger.warning(f"No data available between {start_ts} -> {end_ts} ({human_delta_str})")
-            
+
             # empty dataframe
-            load_and_forecast_df = pd.DataFrame(columns=["Forecasted Load", "Actual Load"], dtype=float, index=pd.DatetimeIndex([], dtype="datetime64[us, Europe/Zurich]"))
-        
+            load_and_forecast_df = pd.DataFrame(
+                columns=["Forecasted Load", "Actual Load"],
+                dtype=float,
+                index=pd.DatetimeIndex([], dtype="datetime64[us, Europe/Zurich]"),
+            )
+
         except requests.ConnectionError as e:
             logger.warning(f"Thrown {e}.")
             raise e
 
         return load_and_forecast_df
-    
+
     async def _semaphore_query(self, semaphore: asyncio.Semaphore, start_ts: pd.Timestamp, end_ts: pd.Timestamp) -> pd.DataFrame:
         """Helper to run the synchronous API call in a thread with a semaphore."""
         async with semaphore:
@@ -112,7 +122,7 @@ class ENTSOEClient:
 
     async def query_load_and_forecast(self, start_ts: pd.Timestamp, end_ts: pd.Timestamp) -> pd.DataFrame:
         """Query the ENTSO-E API for the load and forecast data from `start_ts` to `end_ts`, breaking it down into yearly-queries.
-        
+
         It seems that the ENTSO-E API tends to terminate the connection when asking for 10 years of data.
         Hence, the data is fetched year-by-year -- as it seems to lower the odds of aborted connections.
 
@@ -141,14 +151,14 @@ class ENTSOEClient:
         raised_exceptions = [(idx, e) for idx, e in enumerate(load_and_forecast_dfs) if isinstance(e, Exception)]
         if raised_exceptions:
             for idx, e in raised_exceptions:
-                logger.error(f"Couldn't fetch ENTSO-E data from {start_end_timestamps[idx][0]} -> {start_end_timestamps[idx][1]}")      
+                logger.error(f"Couldn't fetch ENTSO-E data from {start_end_timestamps[idx][0]} -> {start_end_timestamps[idx][1]}")
             raise RuntimeError(f"Fetching data from ENTSO-E API raised: {raised_exceptions}")
-        
+
         return pd.concat(load_and_forecast_dfs)
-    
+
     async def fetch_latest_load_and_forecast(self) -> pd.DataFrame:
         """Query the ENTSO-E API for the load & forecast data, from 01.01.2014 to now+24h."""
         # start_ts = pd.Timestamp("2014-01-01 00:00", tz="Europe/Zurich")
-        start_ts = pd.Timestamp("2025-01-01 00:00", tz="Europe/Zurich") # TODO REMOVE
+        start_ts = pd.Timestamp("2025-01-01 00:00", tz="Europe/Zurich")  # TODO REMOVE
         end_ts = pd.Timestamp(datetime.now() + timedelta(hours=24), tz="Europe/Zurich")
         return await self.query_load_and_forecast(start_ts, end_ts)
