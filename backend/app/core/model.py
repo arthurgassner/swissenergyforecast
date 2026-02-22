@@ -85,4 +85,4 @@ class Model:
         for query_ts in tqdm(query_timestamps):
             predicted_values.append(self._train_predict(Xy, query_ts))
 
-        return pd.Series({"predicted_24h_later_load": predicted_values}, index=pd.DatetimeIndex(query_timestamps))
+        return pd.Series(predicted_values, index=pd.DatetimeIndex(query_timestamps))

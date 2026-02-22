@@ -121,13 +121,8 @@ def _force_1h_frequency(df: pd.DataFrame) -> pd.DataFrame:
     return df.resample(rule=pd.Timedelta(1, "h")).min()
 
 
-def clean(df: pd.DataFrame) -> None:
-    """Clean the dataframe df and dump the cleaned version to disk.
-
-    Args:
-        df (pd.DataFrame): Dirty dataframe
-        out_df_filepath (Path): Filesystem location where the cleaned dataframe will be dumped.
-    """
+def clean(df: pd.DataFrame) -> pd.DataFrame:
+    """Clean the dataframe."""
 
     # Enfore data quality
     df = _enforce_data_quality(df)

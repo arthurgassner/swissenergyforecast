@@ -95,7 +95,7 @@ class MAPE(BaseModel):
         return mapes 
 
 class Forecast(BaseModel):
-    timestamps: list[float] = Field(default_factory=list)
+    timestamps: list[datetime] = Field(default_factory=list)
     y_pred: list[float] = Field(default_factory=list)
     entsoe_mapes: list[MAPE] = Field(default_factory=list)
     our_mapes: list[MAPE] = Field(default_factory=list)
