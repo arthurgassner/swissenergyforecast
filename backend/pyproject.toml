@@ -8,6 +8,7 @@ dependencies = [
     "joblib>=1.5.2",
     "lightgbm>=4.6.0",
     "loguru>=0.7.3",
+    "orjson>=3.11.7",
     "pandas>=2.3.3",
     "pydantic-settings>=2.11.0",
     "scikit-learn>=1.7.2",
