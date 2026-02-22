@@ -151,7 +151,6 @@ class ENTSOEClient:
 
     async def fetch_latest_load_and_forecast(self) -> pd.DataFrame:
         """Query the ENTSO-E API for the load & forecast data, from 01.01.2014 to now+24h."""
-        # start_ts = pd.Timestamp("2014-01-01 00:00", tz="Europe/Zurich")
-        start_ts = pd.Timestamp("2025-01-01 00:00", tz="Europe/Zurich")  # TODO REMOVE
+        start_ts = pd.Timestamp("2014-01-01 00:00", tz="Europe/Zurich")
         end_ts = pd.Timestamp(datetime.now() + timedelta(hours=24), tz="Europe/Zurich")
         return await self.query_load_and_forecast(start_ts, end_ts)
