@@ -14,6 +14,7 @@ To run locally environment, run `docker compose up --watch --build`.
 > [!NOTE]
 > This will run both the frontend and backend.
 > The backend will auto-reload/rebuild on any code changes (see `compose.override.yaml` for details)
+> **FIXME**: The frontend will NOT auto-reload/rebuild on any code changes (see `compose.override.yaml` for details)
 
 ### Test
 
