@@ -37,4 +37,4 @@ function timeSince(date) {
 }
 
 // Fetch the last updated timestamp when the DOM content is loaded
-document.addEventListener("DOMContentLoaded", fetchLastUpdated);
+// document.addEventListener("DOMContentLoaded", fetchLastUpdated);

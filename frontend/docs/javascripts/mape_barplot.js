@@ -111,4 +111,4 @@ async function main() {
 }
 
 // Initialize when DOM content is loaded
-document.addEventListener("DOMContentLoaded", main);
+// document.addEventListener("DOMContentLoaded", main);

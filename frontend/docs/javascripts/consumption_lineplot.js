@@ -1,21 +1,15 @@
-  // Fetch latest forecast data (GET request)
+// Fetch latest forecast data
   async function fetchForecastData() {
-    const response = await fetch('/api/forecasts/fetch/latest/predictions');
+    const response = await fetch('/api/forecast/custom/latest');
     if (!response.ok) {
       throw new Error('Network response was not ok: ' + response.statusText);
     }
     return response.json();
   }
 
-  // Fetch ENTSOE loads data (POST request)
+  // Fetch ENTSOE loads data
   async function fetchEntsoeLoads() {
-    const response = await fetch('/api/entsoe-loads/fetch/latest', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ "n_days": 3, "n_hours": 1 })
-    });
+    const response = await fetch('/api/loads?days=3&hours=1');
     if (!response.ok) {
       throw new Error('Network response was not ok: ' + response.statusText);
     }
@@ -34,24 +28,17 @@
       name: 'Actual Load [MW]'
     };
 
-    const officialForecastTrace = {
-      x: entsoeData.timestamps.map(t => new Date(new Date(t).getTime() + oneDayInMilliseconds)), // Shift 24h into the future
-      y: entsoeData['day_later_forecasts'],
-      mode: 'lines',
-      type: 'scatter',
-      name: 'ENTSO-E\'s previous-day forecasted load [MW]',
-      opacity: 0.3,
-    };
+    // NOTE: officialForecastTrace was removed because 'day_later_forecasts' is missing from the new schema.
 
     const ourForecastTrace = {
       x: forecastData.timestamps.map(t => new Date(new Date(t).getTime() + oneDayInMilliseconds)), // Shift 24h into the future
-      y: forecastData.predicted_24h_later_load.map(y => Math.round(y)),
+      y: forecastData.day_later_predicted_load.map(y => Math.round(y)), // Updated key to match new schema
       mode: 'lines',
       type: 'scatter',
       name: 'Our previous-day forecasted load [MW]'
     };
 
-    return [actualLoadTrace, officialForecastTrace, ourForecastTrace];
+    return [actualLoadTrace, ourForecastTrace];
   }
 
   // Create Plotly layout with the vertical line and "Now" text
@@ -83,7 +70,7 @@
                   line: {
                       color: 'rgba(255, 0, 0, 0.5)', // Red color with 50% opacity
                       width: 2,
-                      dash: 'dot'                   // Dashed line style
+                      dash: 'dot'                    // Dashed line style
                   }
               }
           ],
@@ -116,10 +103,15 @@
   // Main function to fetch data and render chart
   async function main() {
     try {
-      const forecastData = await fetchForecastData();
-      const entsoeData = await fetchEntsoeLoads();
-      console.log(forecastData)
-      console.log(entsoeData)
+      // Run both fetches concurrently for better performance
+      const [forecastData, entsoeData] = await Promise.all([
+        fetchForecastData(),
+        fetchEntsoeLoads()
+      ]);
+
+      console.log('Forecast Data:', forecastData);
+      console.log('ENTSOE Data:', entsoeData);
+
       renderChart(forecastData, entsoeData);
     } catch (error) {
       console.error('Error fetching data:', error);
