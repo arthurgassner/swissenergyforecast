@@ -21,3 +21,5 @@ To run locally environment, run `docker compose up --watch --build`.
 To run the tests, run `uv run pytest`.
 
 ## Prod
+
+`docker compose --file compose.yaml --file compose.prod.yaml up --build`
