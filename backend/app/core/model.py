@@ -66,7 +66,7 @@ class Model:
         # Predict
         return float(self._model.predict(X_serving)[0])
 
-    def train_predict(self, Xy: pd.DataFrame, query_timestamps: list[pd.Timestamp]) -> pd.DataFrame:
+    def train_predict(self, Xy: pd.DataFrame, query_timestamps: list[pd.Timestamp]) -> pd.Series:
         """Train one model per query_ts in `query_timestamps`.
         Each model will only be training on the features in Xy available strictly BEFORE said query_ts.
         The features EXACTLY AT the query_ts will be used to predict the `24h_later_load`.
@@ -85,4 +85,4 @@ class Model:
         for query_ts in tqdm(query_timestamps):
             predicted_values.append(self._train_predict(Xy, query_ts))
 
-        return pd.DataFrame({"predicted_24h_later_load": predicted_values}, index=pd.DatetimeIndex(query_timestamps))
+        return pd.Series({"predicted_24h_later_load": predicted_values}, index=pd.DatetimeIndex(query_timestamps))
