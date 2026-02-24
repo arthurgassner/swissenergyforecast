@@ -59,7 +59,7 @@ Inspired by the [SFOE's energy consumption dashboard](https://www.energiedashboa
 
 - Install `uv`
 - Install the dependencies  `uv sync --project backend --dev` TODO
-- Run `uv run pre-commit install` TODO
+- Run `uv run pre-commit install` TODOO
 
 ### Run
 
