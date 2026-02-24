@@ -1,4 +1,4 @@
-# Build stage
+# --- BUILD ---
 FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS builder
 WORKDIR /src
 
@@ -18,9 +18,12 @@ COPY . .
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv run --project frontend mkdocs build -f frontend/mkdocs.yml
 
-# Run stage
+# --- RUN ---
 FROM nginx:alpine
 WORKDIR /src
+
+# Install curl, for healthcheck
+RUN apk add --no-cache curl
 
 # NOTE: mkdocs defaults to the site/ folder
 COPY --from=builder /src/frontend/site /usr/share/nginx/html

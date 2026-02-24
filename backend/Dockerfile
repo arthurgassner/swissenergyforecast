@@ -1,8 +1,8 @@
-# Build stage
+# --- BUILD ---
 FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS builder
 WORKDIR /src
 
-# Install all dependencies
+# Install python dependencies
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 
@@ -12,9 +12,12 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=backend/pyproject.toml,target=backend/pyproject.toml \
     uv sync --frozen --no-install-project --no-dev --project backend
 
-# Run stage
+# --- RUN ---
 FROM python:3.14-slim
 WORKDIR /src
+
+# Install curl, for healthcheck
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Install the OpenMP shared library -- used by lightgbm
 RUN apt-get update && apt-get install -y --no-install-recommends \
