@@ -60,8 +60,8 @@ Inspired by the [SFOE's energy consumption dashboard](https://www.energiedashboa
 1. Install `uv`
 2. Install all dependencies  `uv sync --all-packages`
 
-    > [!NOTE]
-    > This installs the dependencies of all workspaces -- i.e. `backend` and `frontend` -- along with all groups -- i.e. `dev` and others.
+> [!NOTE]
+> This installs the dependencies of all workspaces -- i.e. `backend` and `frontend` -- along with all groups -- i.e. `dev` and others.
 
 3. Install pre-commit hooks with `uv run pre-commit install`
 
