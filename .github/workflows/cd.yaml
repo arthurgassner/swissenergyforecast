@@ -26,7 +26,7 @@ jobs:
             # --- Healthcheck Verification ---
             echo "Waiting for container to report 'healthy' status..."
             for i in {1..12}; do
-              STATUS=$(docker inspect --format='{{.State.Health.Status}}' swissenergyforecast-backend)
+              STATUS=$(docker inspect --format='{{.State.Health.Status}}' "$CONTAINER_NAME" 2>/dev/null)
 
               if [ "$STATUS" == "healthy" ]; then
                 echo "Deployment successful! Container is healthy."
