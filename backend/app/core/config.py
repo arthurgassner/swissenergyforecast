@@ -13,9 +13,9 @@ class Settings(BaseSettings):
     LATEST_FORECAST_FILEPATH: Path = DATA_FOLDERPATH / "latest_forecast.joblib"
     LATEST_MAPES_FILEPATH: Path = DATA_FOLDERPATH / "latest_mapes.joblib"
     LOGS_FILEPATH: Path = DATA_FOLDERPATH / "logs" / ".log"
-    ENTSOE_API_KEY: str
-    MODEL_N_ESTIMATORS: int
     MAX_CONCURRENT_REQUESTS: int = 10
+    MODEL_N_ESTIMATORS: int = 10
+    ENTSOE_API_KEY: str
 
 
 @lru_cache
