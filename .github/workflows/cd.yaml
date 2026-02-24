@@ -20,5 +20,4 @@ jobs:
           script: |
             cd /home/ubuntu/swissenergyforecast
             git pull origin main
-            chmod +x .github/scripts/deploy.sh
             ./.github/scripts/deploy.sh
