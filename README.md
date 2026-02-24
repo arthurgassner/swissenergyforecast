@@ -77,7 +77,7 @@ To run locally environment, run `docker compose up --watch --build`.
 
 To run the tests, run `uv run pytest`.
 
-## How to deploy
+## Deploy
 
 Both backend & frontend are running on a VPS.
 The deployment is triggered by a push to `main` via GitHub Actions.
