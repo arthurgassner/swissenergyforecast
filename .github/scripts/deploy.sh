@@ -2,7 +2,7 @@
 set -e
 
 PROJECT_DIR="/home/ubuntu/swissenergyforecast"
-SERVICES=("swissenergyforecast-backend" "swissenergyforecast-frontend")
+SERVICES=("backend" "frontend")
 
 echo "🚀 Starting deployment in $PROJECT_DIR"
 cd "$PROJECT_DIR"
