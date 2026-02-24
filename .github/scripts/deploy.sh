@@ -28,7 +28,6 @@ check_health() {
       return 0
     elif [ "$STATUS" = "unhealthy" ]; then
       echo "❌ $SERVICE is unhealthy!"
-      docker compose logs "$SERVICE"
       return 1
     elif [ "$STATUS" = "no-healthcheck" ]; then
       # If no healthcheck is defined, check if the container is simply running
