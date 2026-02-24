@@ -81,4 +81,4 @@ To run the tests, run `uv run pytest`.
 ## How to deploy
 
 Both backend & frontend are running on a VPS.
-The deployment is triggered by a push to `main` via GitHub Actions.
+The deployment is triggered by a push to `main` via GitHub Actions, via the `.github/scripts/deploy.sh` script.
