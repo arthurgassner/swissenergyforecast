@@ -2,24 +2,24 @@ name: swissenergyforecast
 
 services:
   backend:
+    container_name: swissenergyforecast-backend
     build:
       context: .
       dockerfile: backend/Dockerfile
     env_file:
       - ./backend/.env.override
-    container_name: swissenergyforecast-backend
     volumes:
       - swissenergyforecast-backend-data:/src/data
     networks:
       - swissenergyforecast-net
 
   frontend:
+    container_name: swissenergyforecast-frontend
     depends_on:
       - backend
     build:
       context: .
       dockerfile: frontend/Dockerfile
-    container_name: swissenergyforecast-frontend
     networks:
       - swissenergyforecast-net
 

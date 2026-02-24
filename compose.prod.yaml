@@ -16,7 +16,7 @@ services:
       - swissenergyforecast-net
     command: >
       sh -c "apk add --no-cache curl &&
-            echo '50 * * * * curl -s -X PUT http://backend:<BACKEND_PORT>/forecast/custom' | crontab - &&
+            echo '50 * * * * curl -s -X PUT http://swissenergyforecast-backend:8000/forecast/custom' | crontab - &&
             crond -f -l 2"
 networks:
   npm-net:
