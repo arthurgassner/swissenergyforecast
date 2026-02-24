@@ -20,27 +20,5 @@ jobs:
           script: |
             cd /home/ubuntu/swissenergyforecast
             git pull origin main
-            docker compose -f compose.yaml -f compose.prod.yaml up -d --build
-            docker image prune -f
-
-            # --- Healthcheck Verification ---
-            echo "Waiting for container to report 'healthy' status..."
-            for i in {1..12}; do
-              STATUS=$(docker inspect --format='{{.State.Health.Status}}' "$CONTAINER_NAME" 2>/dev/null)
-
-              if [ "$STATUS" == "healthy" ]; then
-                echo "Deployment successful! Container is healthy."
-                docker image prune -f
-                exit 0
-              elif [ "$STATUS" == "unhealthy" ]; then
-                echo "Deployment failed! Container is unhealthy."
-                docker compose logs swissenergyforecast-backend
-                exit 1
-              fi
-
-              echo "Current status: $STATUS... retrying in 5s"
-              sleep 5
-            done
-
-            echo "Timeout: Container did not reach healthy state in time."
-            exit 1
+            chmod +x .github/scripts/deploy.sh
+            ./.github/scripts/deploy.sh
