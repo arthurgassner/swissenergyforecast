@@ -62,7 +62,7 @@ Inspired by the [SFOE's energy consumption dashboard](https://www.energiedashboa
     > [!NOTE]
     > This installs the dependencies of all workspaces -- i.e. `backend` and `frontend` -- along with all groups -- i.e. `dev` and others.
 
-- Run `uv run pre-commit install` TODOO
+- Install pre-commit hooks with `uv run pre-commit install`
 
 ### Run
 
