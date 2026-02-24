@@ -9,7 +9,7 @@ on:
         - main
 
 jobs:
-  test:
+  test-backend:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,7 +25,7 @@ jobs:
         run: uv python install
 
       - name: Install dependencies
-        run: uv sync --all-extras --dev
+        run: uv sync --project backend --all-extras --dev
 
       - name: Run Pytest
         run: uv run pytest
