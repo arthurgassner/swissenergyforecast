@@ -1,15 +1,18 @@
 services:
   backend:
+    restart: unless-stopped
     networks:
       - npm-net # So that Nginx Proxy Manager can see these services
 
   frontend:
+    restart: unless-stopped
     networks:
       - npm-net # So that Nginx Proxy Manager can see these services
 
   scheduler:
     image: alpine:latest
     container_name: swissenergyforecast-scheduler
+    restart: unless-stopped
     depends_on:
       - backend
     networks:
