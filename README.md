@@ -24,7 +24,34 @@ Inspired by the [SFOE's energy consumption dashboard](https://www.energiedashboa
 
 ## Repo structure
 
-`TODO`
+```bash
+├── backend                    # Backend-related code
+│   ├── app/
+│   ├── tests/                 # pytests
+│   ├── viz/                   # Visualization built for the writeup
+│   ├── nb-dev/                # Notebooks created during the EDA/Modelling phase
+│   ├── img/
+│   ├── sanity_checks.ipynb    # Used to manually check our some inputs
+│   ├── data_checks.ipynb      # Used to manually check our data
+│   ├── Dockerfile
+│   └── pyproject.toml
+├── compose.override.yaml
+├── compose.prod.yaml
+├── compose.yaml
+├── frontend                   # MkDocs frontend code
+│   ├── Dockerfile
+│   ├── docs/
+│   ├── img/
+│   ├── mkdocs.yml
+│   ├── nginx.conf
+│   ├── overrides/
+│   └── pyproject.toml
+├── img
+│   └── dashboard.gif
+├── pyproject.toml
+├── uv.lock
+└── README.md
+```
 
 ## How to run locally
 
