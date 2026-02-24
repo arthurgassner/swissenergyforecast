@@ -8,14 +8,14 @@ services:
     env_file:
       - ./backend/.env.override
     container_name: swissenergyforecast-backend
-    expose:
-      - "8000"
     volumes:
       - swissenergyforecast-backend-data:/src/data
     networks:
       - swissenergyforecast-net
 
   frontend:
+    depends_on:
+      - backend
     build:
       context: .
       dockerfile: frontend/Dockerfile
