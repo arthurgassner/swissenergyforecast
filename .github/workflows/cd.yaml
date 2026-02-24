@@ -1,0 +1,46 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches:
+        - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/swissenergyforecast
+            git pull origin main
+            docker compose -f compose.yaml -f compose.prod.yaml up -d --build
+            docker image prune -f
+
+            # --- Healthcheck Verification ---
+            echo "Waiting for container to report 'healthy' status..."
+            for i in {1..12}; do
+              STATUS=$(docker inspect --format='{{.State.Health.Status}}' swissenergyforecast-backend)
+
+              if [ "$STATUS" == "healthy" ]; then
+                echo "Deployment successful! Container is healthy."
+                docker image prune -f
+                exit 0
+              elif [ "$STATUS" == "unhealthy" ]; then
+                echo "Deployment failed! Container is unhealthy."
+                docker compose logs swissenergyforecast-backend
+                exit 1
+              fi
+
+              echo "Current status: $STATUS... retrying in 5s"
+              sleep 5
+            done
+
+            echo "Timeout: Container did not reach healthy state in time."
+            exit 1
