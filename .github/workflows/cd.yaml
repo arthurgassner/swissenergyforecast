@@ -19,7 +19,6 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: ENTSOE_API_KEY
           script: |
             cd /home/ubuntu/swissenergyforecast
             git pull origin main
