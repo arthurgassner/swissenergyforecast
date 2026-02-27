@@ -83,7 +83,7 @@ class ENTSOEClient:
         """Query the ENTSO-E API for the load and forecast data from `start_ts` to `end_ts`."""
 
         human_delta_str = precise_delta(end_ts - start_ts, minimum_unit="seconds")
-        logger.info(f"Asking the ENTSO-E API for load/forecast data between {start_ts} -> {end_ts} ({human_delta_str})")
+        logger.info(f"[{start_ts}] Asking the ENTSO-E API for {human_delta_str} of load/forecast...")
 
         try:
             load_and_forecast_df = self._entsoe_pandas_client.query_load_and_forecast(
@@ -102,7 +102,7 @@ class ENTSOEClient:
             )
 
         except requests.ConnectionError as e:
-            logger.warning(f"Thrown {e}.")
+            logger.warning(f"Raised {e}.")
             raise e
 
         return load_and_forecast_df
