@@ -10,6 +10,13 @@ from human_readable import precise_delta
 from loguru import logger
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
+# empty dataframe
+EMPTY_LOAD_AND_FORECAST_DF = pd.DataFrame(
+    columns=["Forecasted Load", "Actual Load"],
+    dtype=float,
+    index=pd.DatetimeIndex([], dtype="datetime64[us, Europe/Zurich]"),
+)
+
 
 class ENTSOEClient:
     def __init__(self, entsoe_pandas_client: EntsoePandasClient, settings: Settings) -> None:
@@ -92,17 +99,11 @@ class ENTSOEClient:
             ENTSOEClient._raise_if_unexpected_format(load_and_forecast_df)
 
         except NoMatchingDataError:  # No data found for the requested time span
-            logger.warning(f"No data available between {start_ts} -> {end_ts} ({human_delta_str})")
-
-            # empty dataframe
-            load_and_forecast_df = pd.DataFrame(
-                columns=["Forecasted Load", "Actual Load"],
-                dtype=float,
-                index=pd.DatetimeIndex([], dtype="datetime64[us, Europe/Zurich]"),
-            )
+            logger.warning(f"[{start_ts}] ENTSO-E API for {human_delta_str} of load/forecast returned no data.")
+            load_and_forecast_df = EMPTY_LOAD_AND_FORECAST_DF
 
         except requests.ConnectionError as e:
-            logger.warning(f"Raised {e}.")
+            logger.exception(f"Raised {e}.")
             raise e
 
         return load_and_forecast_df
@@ -145,7 +146,7 @@ class ENTSOEClient:
         if raised_exceptions:
             for idx, e in raised_exceptions:
                 delta_str = precise_delta(start_end_timestamps[idx][1] - start_end_timestamps[idx][0], minimum_unit="seconds")
-                logger.error(f"[{start_end_timestamps[idx][0]}] Error when fetching {delta_str} of ENTSO-E data: {e}")
+                logger.exception(f"[{start_end_timestamps[idx][0]}] Error when fetching {delta_str} of ENTSO-E data: {e}")
             raise RuntimeError(
                 f"{len(raised_exceptions)} Exceptions raised while fetching data from ENTSO-E API: {raised_exceptions}"
             )
