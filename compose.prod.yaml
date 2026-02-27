@@ -1,6 +1,8 @@
 services:
   backend:
     restart: unless-stopped
+    environment:
+      - ENTSOE_API_KEY=${ENTSOE_API_KEY:?error}
     networks:
       - npm-net # So that Nginx Proxy Manager can see these services
 
