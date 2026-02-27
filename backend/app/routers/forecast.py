@@ -144,7 +144,7 @@ async def get_forecast_entsoe_range(
     return Forecast(timestamps=forecast_df.index.to_list(), day_later_predicted_loads=forecast_df.to_list())
 
 
-@router.get("/forecast/custom/mapes")
+@router.get("/forecast/custom/mapes", response_class=ORJSONResponse)
 async def get_forecast_custom_mapes(db_client: DBClient = Depends(get_db_client)) -> list[MAPE]:
     """Return the past performances of the latest-computed custom-model"""
     latest_mapes = await db_client.fetch_latest_mapes()
@@ -155,7 +155,7 @@ async def get_forecast_custom_mapes(db_client: DBClient = Depends(get_db_client)
     return latest_mapes
 
 
-@router.get("/forecast/entsoe/mapes")
+@router.get("/forecast/entsoe/mapes", response_class=ORJSONResponse)
 async def get_forecast_entsoe_mapes(db_client: DBClient = Depends(get_db_client)) -> list[MAPE]:
     """Return the past performances of the latest-fetched ENTSO-E-model"""
     # Load past loads
