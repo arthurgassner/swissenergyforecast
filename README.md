@@ -57,13 +57,13 @@ Inspired by the [SFOE's energy consumption dashboard](https://www.energiedashboa
 
 ### Install
 
-1. Install `uv`
-2. Install all dependencies  `uv sync --all-packages`
+1. Install `uv`.
+2. Install all dependencies  `uv sync --all-packages`.
 
 > [!NOTE]
 > This installs the dependencies of all workspaces -- i.e. `backend` and `frontend` -- along with all groups -- i.e. `dev` and others.
 
-3. Install pre-commit hooks with `uv run pre-commit install`
+3. Install pre-commit hooks with `uv run pre-commit install`.
 
 ### Run
 
@@ -71,8 +71,8 @@ To run locally environment, run `docker compose up --watch --build --remove-orph
 
 > [!NOTE]
 > This will run both the frontend and backend.
-> The backend will auto-reload/rebuild on any code changes (see `compose.override.yaml` for details)
-> **FIXME**: The frontend will NOT auto-reload/rebuild on any code changes (see `compose.override.yaml` for details)
+> The backend will auto-reload/rebuild on any code changes (see `compose.override.yaml` for details).
+> **FIXME**: The frontend will NOT auto-reload/rebuild on any code changes (see `compose.override.yaml` for details).
 
 ### Test
 
