@@ -10,7 +10,7 @@ from app.core.config import Settings, get_settings
 
 @pytest.fixture
 def settings() -> Settings:
-    """Mocked settings, for testing."""
+    """Mocked settings, for testing"""
     return get_settings()
 
 
