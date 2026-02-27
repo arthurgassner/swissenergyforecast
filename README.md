@@ -67,7 +67,7 @@ Inspired by the [SFOE's energy consumption dashboard](https://www.energiedashboa
 
 ### Run
 
-To run locally environment, run `docker compose up --watch --build`.
+To run locally environment, run `docker compose up --watch --build --remove-orphans`.
 
 > [!NOTE]
 > This will run both the frontend and backend.
