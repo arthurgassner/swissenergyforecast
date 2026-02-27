@@ -17,14 +17,8 @@ from loguru import logger
 router = APIRouter()
 
 
-@router.put("/forecast/custom", response_class=ORJSONResponse)
-async def put_forecast_custom(
-    entsoe_client: ENTSOEClient = Depends(get_entsoe_client),
-    db_client: DBClient = Depends(get_db_client),
-    settings: Settings = Depends(get_settings),
-) -> Forecast:
+async def _put_forecast_custom(entsoe_client: ENTSOEClient, db_client: DBClient, settings: Settings) -> None:
     """Fetch ENTSO-E's latest data and compute a new forecast for its next 24h."""
-    # TODO move to background task
 
     # Fetch latest loads/forecasts from ENTSOE
     lastest_load_and_forecast_df = await entsoe_client.fetch_latest_load_and_forecast()
@@ -68,7 +62,17 @@ async def put_forecast_custom(
 
     forecast = Forecast(day_later_predicted_loads=yhat.to_list(), timestamps=yhat.index.to_list())
     await db_client.save_latest_forecast(forecast)
-    return forecast
+
+
+@router.put("/forecast/custom", response_class=ORJSONResponse)
+async def put_forecast_custom(
+    background_tasks: BackgroundTasks,
+    entsoe_client: ENTSOEClient = Depends(get_entsoe_client),
+    db_client: DBClient = Depends(get_db_client),
+    settings: Settings = Depends(get_settings),
+) -> ORJSONResponse:
+    background_tasks.add_task(_put_forecast_custom, entsoe_client, db_client, settings)
+    return {"message": "Building new forecast ..."}
 
 
 @router.get("/forecast/custom", response_class=ORJSONResponse)
